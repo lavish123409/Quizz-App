@@ -2,40 +2,51 @@ import { Button, Grid, TextField, Typography } from '@material-ui/core';
 import React from 'react';
 import useStyles from './styles';
 
+
+function goToQuiz()
+{
+    let quiz_code = document.getElementById('quiz-code').value; // This value can be used to go to the quiz page
+
+    console.log('Quiz code : ' , quiz_code);
+}
+
+
 function Home() {
 
     const classes = useStyles();
 
     return (
         <Grid container direction='column' alignItems='center'>
+            {/* ----------------Making Quiz button ----------------------------------------------------------------- */}
             <Grid item className={classes.section}>
-                <Button variant='contained' color='primary' className={classes.makequizbutton} >
+                <Button variant='contained' color='primary' className={classes.makequizbutton} href='/adddetails'>
                     
                         Make a Quiz
                     
                 </Button>
             </Grid>
 
-            <Grid item className={`${classes.section} ${classes.quizcodesection}`} alignItems='center'>
+            {/* ----------------Quiz code text field ----------------------------------------------------------------- */}
+            <Grid item className={`${classes.section} ${classes.quizcodesection}`}>
                 <TextField
                     required
-                    id="outlined-required"
+                    id="quiz-code"
                     label="Enter the quiz code"
                     variant='outlined'
-                />
-                <Button className={classes.quizcodesectionbutton} variant='contained' color='success'>Enter</Button>
+                    />
+                <Button className={classes.quizcodesectionbutton} variant='contained' onClick={goToQuiz}>Enter</Button>
             </Grid>
 
+            {/* ----------------Past quizzes section ----------------------------------------------------------------- */}
             <Grid item className={classes.section}>
                 <Typography variant='h4'>
                     Past Quizzes
                 </Typography>
             </Grid>
         </Grid>
-        // <div className={classes.make_quiz_section}>
-        //     <h1>We are at home.</h1>
-        // </div>
-    )
-}
-
-export default Home
+        
+        )
+    }
+    
+    export default Home
+    
