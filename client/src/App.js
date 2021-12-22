@@ -1,18 +1,16 @@
+import React from 'react';
 import './App.css';
-// import { Route , Switch } from 'react-router-dom';
-import { Route, Routes } from 'react-router-dom'; 
-import Home from './pages/Home/Home';
-import Addquestion from './pages/AddQuestion/Addquestion';
+import { Route, Routes } from 'react-router-dom';
+import Home from './Containers/Home';
+import Addquestion from './Containers/Addquestion';
 
-function App() {
+const App = () => {
   return (
-    
-      <Routes>
-        <Route path="/" element={ <Home/> }/>
-        <Route path="/adddetails" element={ <Addquestion/> }/>
-      </Routes>
-    
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/adddetails" element={<Addquestion />} />
+    </Routes>
   );
-}
+};
 
 export default App;
