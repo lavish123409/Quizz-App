@@ -15,6 +15,7 @@
   },
   "plugins": ["react", "@typescript-eslint", "import", "prettier"],
   "rules": {
+    "import/extensions": [1, "never", { "svg": "always" }],
     "quotes": ["error", "single", { "avoidEscape": true, "allowTemplateLiterals": false }],
     "jsx-quotes": ["error", "prefer-double"],
     "react/function-component-definition": 0,
