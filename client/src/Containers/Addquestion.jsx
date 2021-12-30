@@ -19,7 +19,27 @@ const sendData = () => {
     timeGiven
   };
 
-  console.log(obj);
+  let questionData = localStorage.getItem('question-data');
+  questionData = JSON.parse(questionData) || [];
+
+  // console.log(questionData);
+
+  if(questionData != null)
+  questionData = [...questionData , JSON.stringify(obj)];
+  // questionData.push(obj);
+  else
+  questionData = [ JSON.stringify(obj) ];
+
+  localStorage.setItem('question-data' , questionData);
+
+  document.getElementById('question-input').value = '';
+  document.getElementById('option1-input').value = '';
+  document.getElementById('option2-input').value = '';
+  document.getElementById('option3-input').value = '';
+  document.getElementById('option4-input').value = '';
+  document.getElementById('time-given').value = '';
+
+  // console.log(typeof questionData);
 };
 
 const Addquestion = () => {
@@ -120,10 +140,22 @@ const Addquestion = () => {
               variant="contained"
               style={{
                 padding: '12px',
-                margin: '20px auto'
+                margin: '20px'
               }}
               onClick={sendData}>
               Add Details
+            </Button>
+
+            <Button
+              variant="contained"
+              href="/addtitle"
+              style={{
+                padding: '12px',
+                margin: '20px 20px 20px auto',
+                textDecoration: 'none'
+              }}
+              >
+              Add Title
             </Button>
           </Grid>
         </Grid>
