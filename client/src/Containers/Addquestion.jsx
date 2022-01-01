@@ -1,49 +1,59 @@
 import { Button, Grid, Paper, TextField, Typography } from '@material-ui/core';
-import React from 'react';
+import React, { useState } from 'react';
 import useStyles from './Styles/AddQuestionStyles';
+import Addtitle from './Addtitle';
 
-const sendData = () => {
-  const question = document.getElementById('question-input').value;
-  const option1 = document.getElementById('option1-input').value;
-  const option2 = document.getElementById('option2-input').value;
-  const option3 = document.getElementById('option3-input').value;
-  const option4 = document.getElementById('option4-input').value;
-  const timeGiven = document.getElementById('time-given').value;
 
-  const obj = {
-    question,
-    option1,
-    option2,
-    option3,
-    option4,
-    timeGiven
-  };
-
-  let questionData = localStorage.getItem('question-data');
-  questionData = JSON.parse(questionData) || [];
-
-  // console.log(questionData);
-
-  if(questionData != null)
-  questionData = [...questionData , JSON.stringify(obj)];
-  // questionData.push(obj);
-  else
-  questionData = [ JSON.stringify(obj) ];
-
-  localStorage.setItem('question-data' , questionData);
-
-  document.getElementById('question-input').value = '';
-  document.getElementById('option1-input').value = '';
-  document.getElementById('option2-input').value = '';
-  document.getElementById('option3-input').value = '';
-  document.getElementById('option4-input').value = '';
-  document.getElementById('time-given').value = '';
-
-  // console.log(typeof questionData);
-};
 
 const Addquestion = () => {
   const classes = useStyles();
+  const [open, setOpen] = useState(false);
+  const [data, setData] = useState({
+    title : '',
+    questions : [],
+    leaderboard : []
+  });
+
+
+  const sendData = () => {
+    const question = document.getElementById('question-input').value;
+    const option1 = document.getElementById('option1-input').value;
+    const option2 = document.getElementById('option2-input').value;
+    const option3 = document.getElementById('option3-input').value;
+    const option4 = document.getElementById('option4-input').value;
+    const correctAnswer = document.getElementById('correct-answer').value;
+    const timeGiven = document.getElementById('time-given').value;
+  
+    const obj = {
+      question,
+      options : [],
+      correct_answer : correctAnswer,
+      time_given : timeGiven
+    };
+
+    obj.options.push(option1);
+    obj.options.push(option2);
+    obj.options.push(option3);
+    obj.options.push(option4);
+
+    setData( dataObj => {
+      // data.title = '';
+      dataObj.questions.push(obj);
+      // console.log(data);
+      return data;
+    });
+  
+  
+    document.getElementById('question-input').value = '';
+    document.getElementById('option1-input').value = '';
+    document.getElementById('option2-input').value = '';
+    document.getElementById('option3-input').value = '';
+    document.getElementById('option4-input').value = '';
+    document.getElementById('correct-answer').value = '';
+    document.getElementById('time-given').value = '';
+  
+    // console.log(typeof questionData);
+  };
 
   return (
     <div>
@@ -87,7 +97,7 @@ const Addquestion = () => {
               id="option1-input"
               label="Option 1"
               variant="outlined"
-            />
+              />
           </Grid>
 
           <Grid item xs={12} sm={6}>
@@ -97,7 +107,7 @@ const Addquestion = () => {
               id="option2-input"
               label="Option 2"
               variant="outlined"
-            />
+              />
           </Grid>
 
           <Grid item xs={12} sm={6}>
@@ -107,7 +117,7 @@ const Addquestion = () => {
               id="option3-input"
               label="Option 3"
               variant="outlined"
-            />
+              />
           </Grid>
 
           <Grid item xs={12} sm={6}>
@@ -117,9 +127,24 @@ const Addquestion = () => {
               id="option4-input"
               label="Option 4"
               variant="outlined"
-            />
+              />
           </Grid>
 
+          {/* -------------------------------Correct answer Input---------------------------------------------------------- */}
+          <Grid container alignItems="center">
+            <TextField
+              required
+              id="correct-answer"
+              label="Correct answer"
+              variant="outlined"
+              style={{
+                width: '100%',
+                margin: '25px'
+              }}
+              />
+          </Grid>
+
+          {/* -------------------------------Time alloted for question Input---------------------------------------------------------- */}
           <Grid container alignItems="center">
             <TextField
               type="number"
@@ -148,7 +173,7 @@ const Addquestion = () => {
 
             <Button
               variant="contained"
-              href="/addtitle"
+              onClick={ () => setOpen(true)}
               style={{
                 padding: '12px',
                 margin: '20px 20px 20px auto',
@@ -160,8 +185,11 @@ const Addquestion = () => {
           </Grid>
         </Grid>
       </Grid>
+
+      <Addtitle open={open} setOpen={setOpen} data={data} setData={setData} />
     </div>
   );
 };
+
 
 export default Addquestion;

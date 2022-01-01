@@ -4,7 +4,9 @@ import useStyles from './Styles/HomeStyles';
 
 const goToQuiz = () => {
   const quizCode = document.getElementById('quiz-code').value; // This value can be used to go to the quiz page
-  console.log('Quiz code : ', quizCode);
+  // console.log('Quiz code : ', quizCode);
+
+  window.location.assign(`/quiz/${quizCode}`);
 };
 
 const Home = () => {

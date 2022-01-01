@@ -3,15 +3,16 @@ import './App.css';
 import { Route, Routes } from 'react-router-dom';
 import Home from './Containers/Home';
 import Addquestion from './Containers/Addquestion';
-import Addtitle from './Containers/Addtitle';
 import QuizArea from './Containers/QuizArea';
 
-const App = () => (
+const App = () => ( 
   <Routes>
-    <Route path="/" element={<QuizArea />} />
+    <Route path="/" element={<Home />} />
     <Route path="/adddetails" element={<Addquestion />} />
-    <Route path="/addtitle" element={<Addtitle />} />
-  </Routes>
-);
+    <Route path="/quiz/:quizid" element={<QuizArea />} />
+  </Routes> 
+  );
+
+
 
 export default App;
