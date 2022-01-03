@@ -28,7 +28,7 @@ const Home = () => {
       {/* ----------------Quiz code text field ----------------------------------------------------------------- */}
       <Grid item className={`${classes.section} ${classes.quizcodesection}`}>
         <TextField required id="quiz-code" label="Enter the quiz code" variant="outlined" />
-        <Button className={classes.quizcodesectionbutton} variant="contained" onClick={goToQuiz}>
+        <Button className={classes.quizcodesectionbutton} variant="contained" onClick={goToQuiz} >
           Enter
         </Button>
       </Grid>
