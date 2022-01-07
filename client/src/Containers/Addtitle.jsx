@@ -10,16 +10,19 @@ const Addtitle = ({ open , setOpen , data , setData }) => {
   const [openQuizLink, setOpenQuizLink] = useState(false);
   
 
-  function sendToDB()
-  {
+  const sendToDB = () => {
     const title = document.getElementById('title-input').value; // Get the title
-    setData( dataObj => {
-      const obj = dataObj;
-      obj.title = title;
+    setData( previousQuestionData => {
+      const currentQuestionData = previousQuestionData;
+      currentQuestionData.title = title;
       
-      return obj;
+      return currentQuestionData;
     }); // Adding the title to the object to be sent
 
+    /** this axios post request is sending the quiz data 
+     * that is, its title, the data of questions (question , options , correct_answer , time_allotted)
+     * and the empty leaderboard to the DB 
+     * */ 
     axios.post( 'http://localhost:5000/addquiz' , data)
     .then(res => {
       setQuizLink(res.data);

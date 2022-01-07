@@ -30,8 +30,7 @@ const Home = () => {
 
 
   // This function is used to color the option button when it is selected
-  function colorButton(optionID , bgcolor , color)
-  {
+  const colorButton = (optionID , bgcolor , color) => {
       if(optionID === '') // if option id is empty string then selected option would be undefined
       return; // So, we are exiting from function before any error
 
@@ -45,8 +44,7 @@ const Home = () => {
 
 
   // This function is used to color the button based on circumstances
-  function changeButton(optionID)
-  {
+  const changeButton = (optionID) =>{
       if( showAnswer )
       return;
 
@@ -67,8 +65,7 @@ const Home = () => {
       }
   }
 
-  function checkAnswer()
-  {
+  const checkAnswer = () => {
     
     clearInterval(interval); // [ NOT WORKING ] stop the timer
 
@@ -91,8 +88,19 @@ const Home = () => {
     }
   }
 
-  
+
+  /**
+   * this use effect would run whenever this page loads
+   * it fetches the quiz data from DB and displays it to user
+   * */ 
+
   useEffect(() => {
+
+        /**
+         * This axios get request is calling the server to give
+         * the details of the specific quiz with the given id
+         * and then setting the quiz data with it
+         */
         axios.get(`http://localhost:5000/quiz/${quizid}`)
         .then(data => {
             setQuizData(data.data);
@@ -101,19 +109,20 @@ const Home = () => {
         })
         .catch( err => alert(`The following error occured : ${err.message}`));
 
-        // this use effect would run whenever this page loads
-        // it fetches the quiz data from DB and displays it to user
 
         // return () => {
         //     clearInterval(interval);
         // }
   }, []);
 
-  useEffect(() => {
 
-    // This use effect would run whenever the index value of question changes
-    // It would change the question, its corresponding options on quiz interface
-    // and would also reset the timer
+  /**
+     * This use effect would run whenever the index value of question changes
+     * It would change the question, its corresponding options on quiz interface
+     * and would also reset the timer
+     */
+
+  useEffect(() => {
 
     correctOptionRef.current = '';
     selectdButtonRef.current = '';
@@ -136,10 +145,10 @@ const Home = () => {
     if(interval) // [ NOT WORKING ] if timer is running then stop it
     clearInterval(interval);
       
-    // -------------------------------Timer------------------------------------------------
+    /**  -------------------------------Timer------------------------------------------------  */
     interval = setInterval(() => {
 
-        timeRef.current -= 1; // decrease the vlaue by 1 every second
+        timeRef.current -= 1; // decrease the value by 1 every second
         setTime(timeRef.current);
         
         if(timeRef.current <= 0) // if timer has expired

@@ -24,22 +24,20 @@ const Addquestion = () => {
     const correctAnswer = document.getElementById('correct-answer').value;
     const timeGiven = document.getElementById('time-given').value;
   
-    const obj = {
+    const questionData = {
       question,
       options : [],
       correct_answer : correctAnswer,
       time_given : timeGiven
     };
 
-    obj.options.push(option1);
-    obj.options.push(option2);
-    obj.options.push(option3);
-    obj.options.push(option4);
+    questionData.options.push(option1);
+    questionData.options.push(option2);
+    questionData.options.push(option3);
+    questionData.options.push(option4);
 
-    setData( dataObj => {
-      // data.title = '';
-      dataObj.questions.push(obj);
-      // console.log(data);
+    setData( previousQuestionData => {
+      previousQuestionData.questions.push(questionData);
       return data;
     });
   
@@ -52,7 +50,6 @@ const Addquestion = () => {
     document.getElementById('correct-answer').value = '';
     document.getElementById('time-given').value = '';
   
-    // console.log(typeof questionData);
   };
 
   return (
