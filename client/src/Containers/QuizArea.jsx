@@ -341,7 +341,7 @@ const Home = () => {
         </Button>
 
         { open && (
-            <Leaderboard open={open} setOpen={setOpen}/>
+            <Leaderboard open={open} setOpen={setOpen} quizid={quizid}/>
         )}
         
       </div>

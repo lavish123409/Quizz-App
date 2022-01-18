@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
-import { AppBar, Dialog, IconButton, Paper, styled, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Toolbar, Typography } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+import { AppBar, CircularProgress, Dialog, IconButton, Paper, styled, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Toolbar, Typography } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import tableCellClasses from '@material-ui/core/TableCell';
 import PropTypes from 'prop-types';
+import axios from 'axios';
 
 // const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
 
@@ -28,19 +29,43 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   }));
 
   // False data
-  const rows = [
-      {name : 'Parth' , score : 200},
-      {name : 'Harsh' , score : 300},
-      {name : 'Ayush' , score : 400},
-      {name : 'Siddartha' , score : 150},
-      {name : 'Lavish' , score : 0},
-  ]
+  // const leaaderboard = [
+  //     {name : 'Parth' , score : 200},
+  //     {name : 'Harsh' , score : 300},
+  //     {name : 'Ayush' , score : 400},
+  //     {name : 'Siddartha' , score : 150},
+  //     {name : 'Lavish' , score : 0},
+  // ]
   
 
-const Leaderboard = ({open , setOpen}) => {
+const Leaderboard = ({open , setOpen , quizid}) => {
 
-      useEffect(() => {
-        console.log('running');
+      const [leaderboard, setLeaderboard] = useState([]);
+      const [isLoading, setIsLoading] = useState(true);
+
+      useEffect( () => {
+
+        /**
+         * This axios get request is calling the server to give
+         * the details of the specific quiz with the given id
+         * and then setting the quiz data with it
+         */
+         axios.get(`http://localhost:5000/quiz/${quizid}` , {
+              headers : {
+                  'auth-token' : localStorage.getItem('userToken')
+              }
+          })
+          .then(res => {
+            setLeaderboard(res.data.leaderboard);
+            setLeaderboard( prevleaderboard => {
+              prevleaderboard.sort( (a,b) => b.score - a.score);
+              return prevleaderboard;
+            });
+            setIsLoading(false);
+          })
+          .catch( err => alert(`The following error occured : ${err.message}`));
+
+
         // return () => {
         //   ;
         // }
@@ -48,14 +73,15 @@ const Leaderboard = ({open , setOpen}) => {
 
      return (
       
-        <Dialog
-            fullScreen
-            open={open}
-            onClose={() => setOpen(false)}
-            // TransitionComponent={Transition}
-        >
+      <Dialog
+          fullScreen
+          open={open}
+          onClose={() => setOpen(false)}
+          // TransitionComponent={Transition}
+      >
 
-          {/* -----------------------------Nav Bar---------------------------------------------------- */}
+        {/* { console.log(leaderboard)} */}
+        {/* -----------------------------Nav Bar---------------------------------------------------- */}
         <AppBar sx={{ position: 'relative' }}>
           <Toolbar>
 
@@ -81,39 +107,68 @@ const Leaderboard = ({open , setOpen}) => {
             
           </Toolbar>
         </AppBar>
+
+        {isLoading ? (
+
+            <CircularProgress
+              style={{
+                margin : '10% auto'
+              }}
+            />
+
+        ) : (
+
+          <>
+          
+          {/* ---------------------------------------Leaderboard Table------------------------------------------------ */}
+          <TableContainer
+              component={Paper}
+              style={{
+                  margin : '100px auto',
+                  width : '80%'
+              }}
+          >
+  
+              <Table sx={{ minWidth: 700 }} aria-label="customized table">
+      
+                <TableHead>
         
-        {/* ---------------------------------------Leaderboard Table------------------------------------------------ */}
-        <TableContainer
-            component={Paper}
-            style={{
-                margin : '100px auto',
-                width : '80%'
-            }}
-        >
-        <Table sx={{ minWidth: 700 }} aria-label="customized table">
-        <TableHead>
-            <TableRow>
-            {/* <StyledTableCell align="center">Name</StyledTableCell>
-            <StyledTableCell align="center">Score</StyledTableCell> */}
+                    <TableRow>
+                    {/* <StyledTableCell align="center">Name</StyledTableCell>
+                    <StyledTableCell align="center">Score</StyledTableCell> */}
+        
+                    <TableCell align="center" style={{ backgroundColor : 'black' , color : 'white'}}>Name</TableCell>
+                    <TableCell align="center" style={{ backgroundColor : 'black' , color : 'white'}}>Score</TableCell>
+        
+                    </TableRow>
+        
+                </TableHead>
+      
+      
+                <TableBody>
+                    {/* { console.log(leaderboard[0]) } */}
+                    {leaderboard.map((row) => (
+                    /* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
+                    <StyledTableRow key={Math.round(Math.random() * 10000)}>
+                        
+                        <StyledTableCell component="th" scope="row" align="center">
+                        {row.name}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">{row.score}</StyledTableCell>
+                        
+                    </StyledTableRow>
+                    ))}
+                    
+                </TableBody>
+      
+              </Table>
+  
+          </TableContainer>
+          
+          </>
+        )}
 
-            <TableCell align="center" style={{ backgroundColor : 'black' , color : 'white'}}>Name</TableCell>
-            <TableCell align="center" style={{ backgroundColor : 'black' , color : 'white'}}>Score</TableCell>
-            </TableRow>
-        </TableHead>
-        <TableBody>
-            {rows.map((row) => (
-            <StyledTableRow key={row.name}>
-                <StyledTableCell component="th" scope="row" align="center">
-                {row.name}
-                </StyledTableCell>
-                <StyledTableCell align="center">{row.score}</StyledTableCell>
-            </StyledTableRow>
-            ))}
-        </TableBody>
-        </Table>
-        </TableContainer>
-
-        </Dialog>
+      </Dialog>
 
      )
 
@@ -122,7 +177,8 @@ const Leaderboard = ({open , setOpen}) => {
 // Props validation
 Leaderboard.propTypes = {
     open : PropTypes.bool.isRequired,
-    setOpen : PropTypes.func.isRequired
+    setOpen : PropTypes.func.isRequired,
+    quizid : PropTypes.string.isRequired
 }
 
 export default Leaderboard;
