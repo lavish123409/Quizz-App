@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { AppBar, Dialog, IconButton, Paper, styled, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Toolbar, Typography } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import tableCellClasses from '@material-ui/core/TableCell';
@@ -37,9 +37,16 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   ]
   
 
-const Leaderboard = ({open , setOpen}) => 
+const Leaderboard = ({open , setOpen}) => {
 
-     (
+      useEffect(() => {
+        console.log('running');
+        // return () => {
+        //   ;
+        // }
+      }, []);
+
+     return (
       
         <Dialog
             fullScreen
@@ -108,8 +115,9 @@ const Leaderboard = ({open , setOpen}) =>
 
         </Dialog>
 
-    )
-;
+     )
+
+};
 
 // Props validation
 Leaderboard.propTypes = {

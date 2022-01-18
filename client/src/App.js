@@ -4,15 +4,17 @@ import { Route, Routes } from 'react-router-dom';
 import Home from './Containers/Home';
 import Addquestion from './Containers/Addquestion';
 import QuizArea from './Containers/QuizArea';
+import SignUp from './Containers/SignUp';
+import SignIn from './Containers/SignIn';
 
-const App = () => ( 
+const App = () => (
   <Routes>
     <Route path="/" element={<Home />} />
     <Route path="/adddetails" element={<Addquestion />} />
     <Route path="/quiz/:quizid" element={<QuizArea />} />
-  </Routes> 
-  );
-
-
+    <Route path="/signup" element={<SignUp />} />
+    <Route path="/login" element={<SignIn />} />
+  </Routes>
+);
 
 export default App;

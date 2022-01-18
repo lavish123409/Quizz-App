@@ -10,6 +10,7 @@ const Home = () => {
   const classes = useStyles();
   const { quizid } = useParams();
 
+  const [user, setUser] = useState(null);
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [index, setIndex] = useState(-1);
@@ -76,10 +77,23 @@ const Home = () => {
     {
         colorButton(correctOptionRef.current , '#00e676' , 'white'); // show the correct option in green
         setScore( prevscore => {
-            let newscore = timeRef.current / timeGivenforQ * 1000;
+            let newscore = Math.round(timeRef.current / timeGivenforQ * 1000);
             newscore += prevscore;
             return newscore;
         }); // update the score
+
+        if(user)
+        {
+            const scoreData = {
+                userid: user.userid,
+                score
+              };
+
+            axios.put(`http://localhost:5000/updatescore/${quizid}` , scoreData)
+              .then( () => console.log('updated successfully'))
+              .catch( (err) => console.log(err));
+
+        }
     }
     else // if the option selected by user is incorrect
     {
@@ -96,12 +110,18 @@ const Home = () => {
 
   useEffect(() => {
 
+        setUser(JSON.parse(localStorage.getItem('userData')));
+
         /**
          * This axios get request is calling the server to give
          * the details of the specific quiz with the given id
          * and then setting the quiz data with it
          */
-        axios.get(`http://localhost:5000/quiz/${quizid}`)
+        axios.get(`http://localhost:5000/quiz/${quizid}` , {
+            headers : {
+                'auth-token' : localStorage.getItem('userToken')
+            }
+        })
         .then(data => {
             setQuizData(data.data);
             setIsLoading(false);
@@ -217,7 +237,7 @@ const Home = () => {
   return (
       <div className={classes.backgroundArea}>
         
-        { console.log(score) }
+        {/* { console.log(score) } */}
         {/* --------------------------------------------------Name of the Quiz--------------------------------------------- */}
         <Paper elevation={3} className={classes.heading}>
             <Typography 
@@ -320,7 +340,9 @@ const Home = () => {
             Open Leaderboard
         </Button>
 
-        <Leaderboard open={open} setOpen={setOpen}/>
+        { open && (
+            <Leaderboard open={open} setOpen={setOpen}/>
+        )}
         
       </div>
   );
