@@ -1,6 +1,12 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 export default makeStyles({
+  loadingArea : {
+      display : 'flex',
+      alignItems : 'center',
+      justifyContent : 'center',
+      marginTop : '10%'
+  },
   heading : {
       padding : '3px',
       width : '90%',
@@ -26,7 +32,7 @@ export default makeStyles({
   },
   leaderboard : {
       position : 'absolute',
-      top : 'calc(90% + 10px)',
+      top : 'calc(90% + 25px)',
       left : '30px',
       textTransform : 'none'
   }

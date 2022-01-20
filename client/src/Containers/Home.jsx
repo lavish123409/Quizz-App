@@ -4,7 +4,8 @@ import useStyles from './Styles/HomeStyles';
 
 const goToQuiz = () => {
   const quizCode = document.getElementById('quiz-code').value; // This value can be used to go to the quiz page
-  console.log('Quiz code : ', quizCode);
+
+  window.location.assign(`/quiz/${quizCode}`);
 };
 
 const Home = () => {
@@ -26,7 +27,7 @@ const Home = () => {
       {/* ----------------Quiz code text field ----------------------------------------------------------------- */}
       <Grid item className={`${classes.section} ${classes.quizcodesection}`}>
         <TextField required id="quiz-code" label="Enter the quiz code" variant="outlined" />
-        <Button className={classes.quizcodesectionbutton} variant="contained" onClick={goToQuiz}>
+        <Button className={classes.quizcodesectionbutton} variant="contained" onClick={goToQuiz} >
           Enter
         </Button>
       </Grid>
