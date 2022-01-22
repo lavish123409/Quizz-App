@@ -6,12 +6,14 @@ import Addquestion from './Containers/Addquestion';
 import QuizArea from './Containers/QuizArea';
 import SignUp from './Containers/SignUp';
 import SignIn from './Containers/SignIn';
+import Profile from './Containers/Profile';
 
 const App = () => (
   <Routes>
     <Route path="/" element={<Home />} />
     <Route path="/adddetails" element={<Addquestion />} />
     <Route path="/quiz/:quizid" element={<QuizArea />} />
+    <Route path="/profile/:userid" element={<Profile />} />
     <Route path="/signup" element={<SignUp />} />
     <Route path="/login" element={<SignIn />} />
   </Routes>

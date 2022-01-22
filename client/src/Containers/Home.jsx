@@ -3,25 +3,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 import useStyles from './Styles/HomeStyles';
-
-const goToQuiz = async (user) => {
-  const quizCode = document.getElementById('quiz-code').value; // This value can be used to go to the quiz page
-
-  const scoreData = {
-    userid : user.userid,
-    name : user.name,
-    score : 0
-  };
-  try{
-    const response = await axios.post( `http://localhost:5000/updatescore/${quizCode}` , scoreData );
-    console.log(response.data);
-  }
-  catch(err){
-    alert('this ran ' , err.message);
-  }
-
-  window.location.assign(`/quiz/${quizCode}`);
-};
+import ErrorAlert from './ErrorAlert';
+import MyTable from './MyTable';
 
 
 const getRandomColor = () => {
@@ -43,6 +26,7 @@ const logoutUser = () => {
 const Home = () => {
   const classes = useStyles();
   const [user, setUser] = useState(null);
+  const [errors, setErrors] = useState([]);
 
 
 useEffect(() => {
@@ -50,16 +34,60 @@ useEffect(() => {
   // return () => {
   //   cleanup
   // }
-}, [])
+}, []);
+
+
+const goToQuiz = async () => {
+  const quizCode = document.getElementById('quiz-code').value; // This value can be used to go to the quiz page
+
+  if(user === null)
+  {
+    setErrors([ { id : 0 , msg : 'You need to Login to give the quiz.'} ]);
+    return;
+  }
+
+  const scoreData = {
+    userid : user.userid,
+    name : user.name,
+    score : 0
+  };
+  try{
+    // const response = await axios.post( `http://localhost:5000/updatescore/${quizCode}` , scoreData );
+    await axios.post( `http://localhost:5000/updatescore/${quizCode}` , scoreData );
+    // console.log(response.data);
+  }
+  catch(err){
+    setErrors([ { id : 0 , msg : 'Enter the correct Quiz code.'} ]);
+    return;
+  }
+
+  window.location.assign(`/quiz/${quizCode}`);
+};
+
+
+const makeaQuiz = () => {
+
+  if(user === null)
+  {
+    setErrors([ { id : 0 , msg : 'You need to Login to make and save the quiz.'} ]);
+    return;
+  }
+
+  window.location.assign('/adddetails');
+};
 
 
   return (
 
     <>
       {console.log(user)}
+
+      { errors.length === 0 ? '' : (<ErrorAlert errors={errors} setErrors={setErrors}/>) }
+
       <AppBar
         style={{
-          backgroundColor : '#118a7e'
+          backgroundColor : '#118a7e',
+          zIndex : '2'
         }}
       >
         <Toolbar>
@@ -85,10 +113,14 @@ useEffect(() => {
                 display : 'flex'
               }}
             >
-              <Avatar style={{
+              <Avatar 
+              style={{
                 marginRight : '35px',
-                backgroundColor : getRandomColor()
-              }}>
+                backgroundColor : getRandomColor(),
+                cursor: 'pointer'
+              }}
+              onClick={() => window.location.assign(`/profile/${user.userid}`)}
+              >
                 {user.name.charAt(0).toUpperCase()}
               </Avatar>
 
@@ -122,7 +154,8 @@ useEffect(() => {
             variant="contained"
             color="primary"
             className={classes.makequizbutton}
-            href="/adddetails">
+            onClick={() => makeaQuiz()}
+          >
             Make a Quiz
           </Button>
         </Grid>
@@ -130,15 +163,43 @@ useEffect(() => {
         {/* ----------------Quiz code text field ----------------------------------------------------------------- */}
         <Grid item className={`${classes.section} ${classes.quizcodesection}`}>
           <TextField required id="quiz-code" label="Enter the quiz code" variant="outlined" />
-          <Button className={classes.quizcodesectionbutton} variant="contained" onClick={() => goToQuiz(user)} >
+          <Button className={classes.quizcodesectionbutton} variant="contained" onClick={() => goToQuiz()} >
             Enter
           </Button>
         </Grid>
 
         {/* ----------------Past quizzes section ----------------------------------------------------------------- */}
-        <Grid item className={classes.section}>
+        {/* <Grid item className={classes.section}> */}
+        <Grid 
+          item
+          className={classes.section}
+          style={{
+            width: '90%',
+            textAlign: 'center',
+            paddingTop: '2%',
+            marginBottom: '2%',
+            borderRadius: '5px',
+            boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px',
+          }}
+        >
           <Typography variant="h4">Past Quizzes</Typography>
+          {
+            // user ?
+            <MyTable/>
+            // :
+            // <Typography 
+            //   variant="h6"
+            //   style={{
+            //     fontFamily: 'Times New Roman',
+            //     margin: '10px',
+            //     color: '#9ba6a5'
+            //   }}
+            // >
+            //   You need to login to see the past quizzes.
+            // </Typography>
+          }
         </Grid>
+        {/* </Grid> */}
       </Grid>
     </>
 

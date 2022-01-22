@@ -1,28 +1,64 @@
 import { Avatar, Box, Button, Container, Grid, Link, Paper, TextField, Typography } from '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import axios from 'axios';
-import React from 'react';
+import React, { useState } from 'react';
+import ErrorAlert from './ErrorAlert';
 
-function handleSubmit(event)
-{
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    // eslint-disable-next-line no-console
-    const loginData = {
-      email: data.get('email'),
-      password: data.get('password'),
-    };
 
-    axios.post('http://localhost:5000/login' , loginData)
-        .then( res => {
-            localStorage.setItem('userToken' , res.data.token);
-            localStorage.setItem('userData' , JSON.stringify(res.data.userData));
-        })
-        .catch( err => console.log(err.response.data));
-}
 
-const SignIn = () => (
+const SignIn = () => {
+
+    const [errors, setErrors] = useState([]);
+
+
+    function handleSubmit(event)
+    {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        // eslint-disable-next-line no-console
+        const loginData = {
+        email: data.get('email'),
+        password: data.get('password'),
+        };
+
+        axios.post('http://localhost:5000/login' , loginData)
+            .then( res => {
+                localStorage.setItem('userToken' , res.data.token);
+                localStorage.setItem('userData' , JSON.stringify(res.data.userData));
+
+                window.location.replace('/');
+            })
+            .catch( err => {
+                // console.log(err.response.data);
+                setErrors(err.response.data.errors.map( (msg , ind) => { 
+                    const errorObject = {
+                        id: ind,
+                        msg
+                    };
+                    return errorObject;
+                }));
+            });
+    }
+
+    // let errrender;
+
+    // useEffect(() => {
+    //   console.log('rnnnnn');
+    // //   errrender = errors.length === 0 ? '' : (<ErrorAlert errors={errors} setErrors={setErrors}/>)
+    
+    //   return () => {
+    //     ;
+    //   };
+    // }, [errors.length]);
+    
+
+
+    return (
         <div>
+
+            {/* {console.log(errors)} */}
+            { errors.length === 0 ? '' : (<ErrorAlert errors={errors} setErrors={setErrors}/>) }
+
             <Container component="main" maxWidth="sm">
                 <Paper
                     elevation={3}
@@ -41,7 +77,7 @@ const SignIn = () => (
                         Login
                     </Typography>
 
-                    <Box component="form" onSubmit={handleSubmit} noValidate style={{ padding: '10%' }}>
+                    <Box component="form" onSubmit={(e) => handleSubmit(e)} noValidate style={{ padding: '10%' }}>
                         <TextField
                             variant="outlined"
                             margin="normal"
@@ -94,5 +130,7 @@ const SignIn = () => (
             </Container>
         </div>
     )
+
+};
 
 export default SignIn

@@ -104,15 +104,16 @@ app.post(
 
     let errors = validationResult(req).errors;
     errors = errors.map((error) => error.msg);
-    console.log(typeof errors);
+    // console.log(typeof errors);
 
     // if (!(errors === null)) return res.status(400).send({ errors });
+    if (!(errors.length === 0)) return res.status(400).send({ errors });
 
     const emailExist = await User.findOne({ email: req.body.email });
     if (emailExist)
       return res
         .status(401)
-        .send({ message: "Email already exists. You might need to login." });
+        .send({ errors: ["Email already exists. You might need to login."] });
 
     const salt = await bcryptjs.genSalt(10);
     const hashedPassword = await bcryptjs.hash(req.body.password, salt);
@@ -140,7 +141,7 @@ app.post(
         };
         res.send(responseData);
       })
-      .catch((err) => console.log(err.message));
+      .catch((err) => res.status(400).send({ errors: [err.message] }));
   }
 );
 
@@ -149,23 +150,15 @@ app.post(
   [
     body("email").isEmail().withMessage("Given Email is invalid"),
 
-    body("email")
-      .isLength({ max: 256 })
-      .withMessage("Email should contain maximum 256 characters"),
+    // body("email")
+    //   .isLength({ max: 256 })
+    //   .withMessage("Email should contain maximum 256 characters"),
 
-    body("email")
-      .isLength({ min: 5 })
-      .withMessage("Email should contain minimum 5 characters"),
+    // body("email")
+    //   .isLength({ min: 5 })
+    //   .withMessage("Email should contain minimum 5 characters"),
 
-    body("password")
-      .isLength({ min: 8 })
-      .withMessage("Password should contain minimum 8 characters"),
-
-    body("password")
-      .isLength({ max: 1024 })
-      .withMessage("Password should contain maximum 1024 characters"),
-
-    body("password").exists().withMessage("Password is mandatory"),
+    body("password").notEmpty().withMessage("Password is mandatory"),
   ],
   async (req, res) => {
     // console.log(validationResult(req));
@@ -176,20 +169,24 @@ app.post(
 
     let errors = validationResult(req).errors;
     errors = errors.map((error) => error.msg);
-    console.log(typeof errors);
+    // console.log(errors);
 
-    // if (!(errors === null)) res.status(400).send({ errors });
+    if (!(errors.length === 0)) return res.status(400).send({ errors });
 
     const user = await User.findOne({ email: req.body.email });
     if (!user)
-      return res.status(401).send({ message: "Email or password is invalid." });
+      return res
+        .status(401)
+        .send({ errors: ["Email or password is invalid."] });
 
     const isValidPassword = await bcryptjs.compare(
       req.body.password,
       user.password
     );
     if (!isValidPassword)
-      return res.status(401).send({ message: "Email or password is invalid." });
+      return res
+        .status(401)
+        .send({ errors: ["Email or password is invalid."] });
 
     const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
 
@@ -230,6 +227,18 @@ app.put("/updatescore/:quizid", async (req, res) => {
     }
   );
 
+  await User.updateOne(
+    { _id: mongoose.Types.ObjectId(req.body.userid) },
+    {
+      $set: {
+        "quiz_given.$[quizid].score": req.body.score,
+      },
+    },
+    {
+      arrayFilters: [{ "quizid._id": mongoose.Types.ObjectId(quizid) }],
+    }
+  );
+
   // console.log(response);
   //   {},
   //   (err, model) => {
@@ -243,7 +252,7 @@ app.put("/updatescore/:quizid", async (req, res) => {
   // );
 });
 
-app.post("/updatescore/:quizid", (req, res) => {
+app.post("/updatescore/:quizid", async (req, res) => {
   // console.log("in post");
   // console.log(req.params);
   // console.log(req.body);
@@ -255,15 +264,44 @@ app.post("/updatescore/:quizid", (req, res) => {
     score: req.body.score,
   };
 
-  Quiz.findByIdAndUpdate(
+  const response = await Quiz.findByIdAndUpdate(
     quizid,
     {
       $push: { leaderboard: leaderboardData },
     },
-    { safe: true, upsert: true },
-    (err, model) => {
-      if (err) return res.send(err);
-      return res.json(model);
-    }
+    { safe: true, upsert: true }
+    // (err, model) => {
+    //   if (err) return res.send(err);
+    //   quizTitle = model.title;
+    //   console.log(model);
+    //   return res.json(model);
+    // }
   );
+
+  const userQuizData = {
+    _id: mongoose.Types.ObjectId(quizid),
+    title: response.title,
+    score: req.body.score,
+  };
+
+  await User.findByIdAndUpdate(req.body.userid, {
+    $push: { quiz_given: userQuizData },
+  });
+
+  // console.log("response : ", response);
+  res.send(response);
+});
+
+app.get("/quizgivenby/:userid", async (req, res) => {
+  const userid = req.params.userid;
+  let response;
+
+  try {
+    response = await User.findById(userid);
+    // console.log("userdata : ", response);
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+
+  res.send(response.quiz_given);
 });

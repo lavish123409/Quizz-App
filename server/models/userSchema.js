@@ -32,6 +32,10 @@ const userSchema = new mongoose.Schema({
         type: Number,
         required: true,
       },
+      givenAt: {
+        type: Date,
+        default: Date.now,
+      },
     },
   ],
   quiz_made: [
@@ -43,6 +47,10 @@ const userSchema = new mongoose.Schema({
       title: {
         type: String,
         required: true,
+      },
+      madeAt: {
+        type: Date,
+        default: Date.now,
       },
     },
   ],

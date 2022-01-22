@@ -2,7 +2,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 export default makeStyles({
   section: {
-    marginTop: '100px'
+    marginTop: '7.5%'
   },
   makequizbutton: {
     padding: '10px 20px',
