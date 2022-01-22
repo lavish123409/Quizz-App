@@ -20,10 +20,6 @@ const userSchema = new mongoose.Schema({
   },
   quiz_given: [
     {
-      quizid: {
-        type: String,
-        required: true,
-      },
       title: {
         type: String,
         required: true,
@@ -40,10 +36,10 @@ const userSchema = new mongoose.Schema({
   ],
   quiz_made: [
     {
-      quizid: {
-        type: String,
-        required: true,
-      },
+      // quizid: {
+      //   type: String,
+      //   required: true,
+      // },
       title: {
         type: String,
         required: true,

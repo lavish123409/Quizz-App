@@ -2,6 +2,7 @@ import { Button, Grid, Paper, TextField, Typography } from '@material-ui/core';
 import React, { useState } from 'react';
 import useStyles from './Styles/AddQuestionStyles';
 import Addtitle from './Addtitle';
+import ErrorAlert from './ErrorAlert';
 
 
 
@@ -13,6 +14,16 @@ const Addquestion = () => {
     questions : [],
     leaderboard : []
   });
+  const [fieldErrors, setFieldErrors] = useState({
+    question: false,
+    option1: false,
+    option2: false,
+    option3: false,
+    option4: false,
+    correctanswer: false,
+    timegiven: false
+  });
+  const [errors, setErrors] = useState([]);
 
 
   const sendData = () => {
@@ -23,6 +34,54 @@ const Addquestion = () => {
     const option4 = document.getElementById('option4-input').value;
     const correctAnswer = document.getElementById('correct-answer').value;
     const timeGiven = document.getElementById('time-given').value;
+
+    if(question === '')
+    {
+      setFieldErrors(prevValue => ({...prevValue , question : true}));
+      return;
+    }
+
+    if(option1 === '')
+    {
+      setFieldErrors(prevValue => ({...prevValue , option1 : true}));
+      return;
+    }
+
+    if(option2 === '')
+    {
+      setFieldErrors(prevValue => ({...prevValue , option2 : true}));
+      return;
+    }
+
+    if(option3 === '')
+    {
+      setFieldErrors(prevValue => ({...prevValue , option3 : true}));
+      return;
+    }
+
+    if(option4 === '')
+    {
+      setFieldErrors(prevValue => ({...prevValue , option4 : true}));
+      return;
+    }
+
+    if(correctAnswer === '')
+    {
+      setFieldErrors(prevValue => ({...prevValue , correctanswer : true}));
+      return;
+    }
+
+    if(!(correctAnswer === option1 || correctAnswer === option2 || correctAnswer === option3 || correctAnswer === option4))
+    {
+      setErrors([ { id : 0 , msg : 'Correct answer should be one of the options.'} ]);
+      return;
+    }
+
+    if(timeGiven === '')
+    {
+      setFieldErrors(prevValue => ({...prevValue , timegiven : true}));
+      return;
+    }
   
     const questionData = {
       question,
@@ -54,6 +113,9 @@ const Addquestion = () => {
 
   return (
     <div>
+
+      { errors.length === 0 ? '' : (<ErrorAlert errors={errors} setErrors={setErrors}/>) }
+
       {/* -------------------------------Header---------------------------------------------------------- */}
       <Paper
         elevation={3}
@@ -83,6 +145,9 @@ const Addquestion = () => {
             variant="outlined"
             multiline
             maxRows={5}
+            error={fieldErrors.question}
+            helperText={fieldErrors.question ? 'Question cannot be empty.' : ''}
+            onClick={() => setFieldErrors(prevValue => ({...prevValue , question : false}))}
           />
         </Grid>
         {/* -------------------------------Options Input---------------------------------------------------------- */}
@@ -94,6 +159,9 @@ const Addquestion = () => {
               id="option1-input"
               label="Option 1"
               variant="outlined"
+              error={fieldErrors.option1}
+              helperText={fieldErrors.option1 ? 'Option field cannot be empty.' : ''}
+              onClick={() => setFieldErrors(prevValue => ({...prevValue , option1 : false}))}
               />
           </Grid>
 
@@ -104,6 +172,9 @@ const Addquestion = () => {
               id="option2-input"
               label="Option 2"
               variant="outlined"
+              error={fieldErrors.option2}
+              helperText={fieldErrors.option2 ? 'Option field cannot be empty.' : ''}
+              onClick={() => setFieldErrors(prevValue => ({...prevValue , option2 : false}))}
               />
           </Grid>
 
@@ -114,6 +185,9 @@ const Addquestion = () => {
               id="option3-input"
               label="Option 3"
               variant="outlined"
+              error={fieldErrors.option3}
+              helperText={fieldErrors.option3 ? 'Option field cannot be empty.' : ''}
+              onClick={() => setFieldErrors(prevValue => ({...prevValue , option3 : false}))}
               />
           </Grid>
 
@@ -124,6 +198,9 @@ const Addquestion = () => {
               id="option4-input"
               label="Option 4"
               variant="outlined"
+              error={fieldErrors.option4}
+              helperText={fieldErrors.option4 ? 'Option field cannot be empty.' : ''}
+              onClick={() => setFieldErrors(prevValue => ({...prevValue , option4 : false}))}
               />
           </Grid>
 
@@ -138,6 +215,9 @@ const Addquestion = () => {
                 width: '100%',
                 margin: '25px'
               }}
+              error={fieldErrors.correctanswer}
+              helperText={fieldErrors.correctanswer ? 'Question cannot be empty.' : ''}
+              onClick={() => setFieldErrors(prevValue => ({...prevValue , correctanswer : false}))}
               />
           </Grid>
 
@@ -153,6 +233,9 @@ const Addquestion = () => {
                 width: '50%',
                 margin: '25px'
               }}
+              error={fieldErrors.timegiven}
+              helperText={fieldErrors.timegiven ? 'Question cannot be empty.' : ''}
+              onClick={() => setFieldErrors(prevValue => ({...prevValue , timegiven : false}))}
             />
           </Grid>
 

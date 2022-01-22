@@ -57,13 +57,70 @@ app.get("/quiz/:quizid", verify, (req, res) => {
 });
 
 // For adding a quiz and then sending back the id
-app.post("/addquiz", (req, res) => {
-  const quiz = new Quiz(req.body);
+app.post("/addquiz", async (req, res) => {
+  const quizData = {
+    title: req.body.title,
+    questions: req.body.questions,
+    leaderboard: req.body.leaderboard,
+  };
 
-  quiz
-    .save()
-    .then((data) => res.send(data._id.toString()))
-    .catch((err) => console.log(err));
+  const quiz = new Quiz(quizData);
+  let quizid = "",
+    response;
+  // console.log(req.body);
+
+  try {
+    response = await quiz.save();
+  } catch (err) {
+    return res.status(401).send({ errors: [err.message] });
+  }
+
+  // console.log(response);
+
+  quizid = response._id.toString();
+
+  // quiz
+  //   .save()
+  //   .then((data) => {
+  //     quizid = data._id.toString();
+  //     res.send(data._id.toString());
+  //   })
+  //   .catch((err) => res.status(401).send({ errors: [err.message] }));
+
+  console.log("quizid : ", quizid);
+
+  const quizForUserData = {
+    _id: mongoose.Types.ObjectId(quizid),
+    title: quizData.title,
+  };
+
+  // console.log("uid : ", req.body.userid);
+
+  try {
+    await User.updateOne(
+      { _id: mongoose.Types.ObjectId(req.body.userid) },
+      {
+        $push: { quiz_made: quizForUserData },
+      },
+      { safe: true, upsert: true }
+    );
+  } catch (err) {
+    return res.status(401).send({ errors: [err.message] });
+  }
+
+  res.send(quizid);
+
+  // if (quizid !== "") {
+  //   User.updateOne(
+  //     { _id: mongoose.Types.ObjectId(req.body.userid) },
+  //     {
+  //       $push: { quiz_made: quizForUserData },
+  //     },
+  //     { safe: true, upsert: true }
+  //   );
+  // .then((data) => res.send(data))
+  // .catch((err) => res.status(401).send({ errors: [err.message] }));
+  // }
 });
 
 app.post(
@@ -304,4 +361,18 @@ app.get("/quizgivenby/:userid", async (req, res) => {
   }
 
   res.send(response.quiz_given);
+});
+
+app.get("/quizmadeby/:userid", async (req, res) => {
+  const userid = req.params.userid;
+  let response;
+
+  try {
+    response = await User.findById(userid);
+    // console.log("userdata : ", response);
+  } catch (err) {
+    res.status(400).send({ errors: [err.message] });
+  }
+
+  res.send(response.quiz_made);
 });

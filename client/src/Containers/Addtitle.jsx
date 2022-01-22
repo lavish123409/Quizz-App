@@ -2,22 +2,39 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } 
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import ErrorAlert from './ErrorAlert';
 
 
 
 const Addtitle = ({ open , setOpen , data , setData }) => {
   const [quizLink, setQuizLink] = useState('');
   const [openQuizLink, setOpenQuizLink] = useState(false);
+  const [errors, setErrors] = useState([]);
   
 
   const sendToDB = () => {
     const title = document.getElementById('title-input').value; // Get the title
+
+    if(title === '')
+    {
+      setErrors([ { id : 0 , msg : 'Title should not be empty.'} ]);
+      return;
+    }
+
+    if(data.questions.length === 0)
+    {
+      setErrors([ { id : 0 , msg : 'Seems like you have not added the questions. Kindly add them and then add the quiz'} ]);
+      return;
+    }
+
     setData( previousQuestionData => {
       const currentQuestionData = previousQuestionData;
       currentQuestionData.title = title;
       
       return currentQuestionData;
     }); // Adding the title to the object to be sent
+
+    setData( previousQuestionData => ( {...previousQuestionData , userid : JSON.parse(localStorage.getItem('userData')).userid } ));
 
     /** this axios post request is sending the quiz data 
      * that is, its title, the data of questions (question , options , correct_answer , time_allotted)
@@ -29,13 +46,18 @@ const Addtitle = ({ open , setOpen , data , setData }) => {
       setOpenQuizLink(true);
       setOpen(false);
     })
-    .catch(err => alert(`The following error occured : ${err}`));
+    .catch(err => {
+      setErrors([ { id : 0 , msg : err.message} ]);
+    });
 
   }
 
 
   return (
     <div>
+
+      { errors.length === 0 ? '' : (<ErrorAlert errors={errors} setErrors={setErrors}/>) }
+
       {/* -------------------------------Dialog for Title Input---------------------------------------------------------- */}
       <Dialog 
         open={open} 
