@@ -4,6 +4,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import tableCellClasses from '@material-ui/core/TableCell';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import ErrorAlert from './ErrorAlert';
 
 // const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
 
@@ -42,6 +43,7 @@ const Leaderboard = ({open , setOpen , quizid}) => {
 
       const [leaderboard, setLeaderboard] = useState([]);
       const [isLoading, setIsLoading] = useState(true);
+      const [errors, setErrors] = useState([]);
 
       useEffect( () => {
 
@@ -63,7 +65,9 @@ const Leaderboard = ({open , setOpen , quizid}) => {
             });
             setIsLoading(false);
           })
-          .catch( err => alert(`The following error occured : ${err.message}`));
+          .catch( err => {
+            setErrors([ { id : 0 , msg : err.message} ]);
+          });
 
 
         // return () => {
@@ -79,6 +83,8 @@ const Leaderboard = ({open , setOpen , quizid}) => {
           onClose={() => setOpen(false)}
           // TransitionComponent={Transition}
       >
+
+      { errors.length === 0 ? '' : (<ErrorAlert errors={errors} setErrors={setErrors}/>) }
 
         {/* { console.log(leaderboard)} */}
         {/* -----------------------------Nav Bar---------------------------------------------------- */}

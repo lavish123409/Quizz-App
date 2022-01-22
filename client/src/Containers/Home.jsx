@@ -46,6 +46,26 @@ const goToQuiz = async () => {
     return;
   }
 
+  let userhasgiven = {
+    result : false
+  };
+
+  try {
+    userhasgiven = await axios.get( `http://localhost:5000/checkif/${user.userid}/hasgiven/${quizCode}` );
+  }
+  catch(err) {
+    setErrors([ { id : 0 , msg : err.message} ]);
+    return;
+  }
+
+  // console.log('uhasgv : ' , userhasgiven);
+
+  if(userhasgiven.data.result)
+  {
+    window.location.assign(`/quizfinal/${quizCode}`);
+    return;
+  }
+
   const scoreData = {
     userid : user.userid,
     name : user.name,

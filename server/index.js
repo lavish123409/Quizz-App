@@ -376,3 +376,35 @@ app.get("/quizmadeby/:userid", async (req, res) => {
 
   res.send(response.quiz_made);
 });
+
+app.get("/checkif/:userid/hasgiven/:quizid", async (req, res) => {
+  const { userid, quizid } = req.params;
+
+  // console.log("uid : ", userid);
+  // console.log("qid : ", quizid);
+
+  let response;
+
+  try {
+    response = await User.aggregate([
+      {
+        $match: {
+          _id: mongoose.Types.ObjectId(userid),
+        },
+      },
+      {
+        $project: {
+          matchedIndex: {
+            $indexOfArray: ["$quiz_given._id", mongoose.Types.ObjectId(quizid)],
+          },
+        },
+      },
+    ]);
+  } catch (err) {
+    res.status(400).send({ errors: [err.message] });
+  }
+
+  // console.log(response[0].matchedIndex !== -1);
+
+  res.send({ result: response[0].matchedIndex !== -1 });
+});
