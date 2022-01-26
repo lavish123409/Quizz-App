@@ -54,7 +54,7 @@ const goToQuiz = async () => {
     userhasgiven = await axios.get( `http://localhost:5000/checkif/${user.userid}/hasgiven/${quizCode}` );
   }
   catch(err) {
-    setErrors([ { id : 0 , msg : err.message} ]);
+    setErrors([ { id : 0 , msg : 'Enter the correct Quiz code.' } ]);
     return;
   }
 
@@ -182,8 +182,8 @@ const makeaQuiz = () => {
 
         {/* ----------------Quiz code text field ----------------------------------------------------------------- */}
         <Grid item className={`${classes.section} ${classes.quizcodesection}`}>
-          <TextField required id="quiz-code" label="Enter the quiz code" variant="outlined" />
-          <Button className={classes.quizcodesectionbutton} variant="contained" onClick={() => goToQuiz()} >
+          <TextField required id="quiz-code" label="Enter the quiz code" variant="outlined" style={{ flex: '0.8'}}/>
+          <Button className={classes.quizcodesectionbutton} variant="contained" onClick={() => goToQuiz()} style={{ flex: '0.1'}} >
             Enter
           </Button>
         </Grid>
@@ -204,19 +204,19 @@ const makeaQuiz = () => {
         >
           <Typography variant="h4">Past Quizzes</Typography>
           {
-            // user ?
+            user ?
             <MyTable/>
-            // :
-            // <Typography 
-            //   variant="h6"
-            //   style={{
-            //     fontFamily: 'Times New Roman',
-            //     margin: '10px',
-            //     color: '#9ba6a5'
-            //   }}
-            // >
-            //   You need to login to see the past quizzes.
-            // </Typography>
+            :
+            <Typography 
+              variant="h6"
+              style={{
+                fontFamily: 'Times New Roman',
+                margin: '10px',
+                color: '#9ba6a5'
+              }}
+            >
+              You need to login to see the past quizzes.
+            </Typography>
           }
         </Grid>
         {/* </Grid> */}

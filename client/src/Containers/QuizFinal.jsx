@@ -111,6 +111,7 @@ const QuizFinal = () => {
                     fontSize: '1.1rem',
                     fontWeight: 'bold'
                 }}
+                onClick={() => navigator.clipboard.writeText(quizid)}
             >
                 Copy
             </Button>
@@ -119,11 +120,15 @@ const QuizFinal = () => {
 
         {isLoading ? (
 
-            <CircularProgress
+            <div
                 style={{
-                margin : '10% auto'
+                    display : 'flex',
+                    alignItems : 'center',
+                    justifyContent : 'center',
                 }}
-            />
+            >
+                <CircularProgress/>
+            </div>
 
         ) : (
 
@@ -172,7 +177,16 @@ const QuizFinal = () => {
                         {/* { console.log(leaderboard[0]) } */}
                         {leaderboard.map((row) => (
                         /* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
-                        <StyledTableRow key={row._id}>
+                        <StyledTableRow 
+                            key={row._id}
+                            onClick={() => window.location.assign(`\\profile\\${row._id}`)}
+                            sx={{
+                                cursor: 'pointer',
+                                '&:hover': {
+                                backgroundColor: 'rgba(0, 0, 0, 0.18)'
+                                }
+                            }}
+                        >
                             
                             <StyledTableCell component="th" scope="row" align="center">
                             {row.name}

@@ -111,7 +111,7 @@ export default function SignUp() {
         lastName.value = '';
         email.value = '';
         password.value = '';
-        // window.location.replace('/');
+        window.location.replace('/');
 
     }
 

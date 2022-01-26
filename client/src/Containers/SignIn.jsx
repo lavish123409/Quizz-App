@@ -29,7 +29,6 @@ const SignIn = () => {
                 window.location.replace('/');
             })
             .catch( err => {
-                // console.log(err.response.data);
                 setErrors(err.response.data.errors.map( (msg , ind) => { 
                     const errorObject = {
                         id: ind,

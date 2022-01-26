@@ -1,5 +1,4 @@
-import { Avatar, Button, Paper, styled, Table, TableBody, TableCell, tableCellClasses, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
-// import { ExitToAppIcon } from '@material-ui/icons';
+import { Avatar, Button, CircularProgress, Paper, styled, Table, TableBody, TableCell, tableCellClasses, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -9,44 +8,63 @@ import useStyles from './Styles/ProfileStyles';
 import ErrorAlert from './ErrorAlert';
 
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    [`&.${tableCellClasses.head}`]: {
-      backgroundColor: theme.palette.common.blue,
-      color: theme.palette.common.white,
-    },
-    [`&.${tableCellClasses.body}`]: {
-      fontSize: 14,
-    },
-  }));
+    const StyledTableCell = styled(TableCell)(({ theme }) => ({
+        [`&.${tableCellClasses.head}`]: {
+        backgroundColor: theme.palette.common.blue,
+        color: theme.palette.common.white,
+        },
+        [`&.${tableCellClasses.body}`]: {
+        fontSize: 14,
+        },
+    }));
 
 
-  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    const StyledTableRow = styled(TableRow)(({ theme }) => ({
     '&:nth-of-type(odd)': {
-      backgroundColor: theme.palette.action.hover,
+        backgroundColor: theme.palette.action.hover,
     },
     // hide last border
     '&:last-child td, &:last-child th': {
-      border: 0,
+        border: 0,
     },
-  }));
+    }));
+
+
+    const logoutUser = () => {
+        localStorage.clear();
+        window.location.replace('/');
+      };
 
 
 
 
 const Profile = () => {
+
+    const options = {
+        year: 'numeric',
+        month:'long',
+        day:'numeric',
+        weekday: 'long',
+   };
+
     // const [user, setUser] = useState({});
     const [errors, setErrors] = useState([]);
-    const [tableData, setTableData] = useState([]);
+    const [userData, setUserData] = useState({});
+    const [curruser, setCurruser] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
     const {userid} = useParams();
 
     const classes = useStyles();
 
     useEffect(() => {
     //   console.log('rnng');
-    //   setUser(JSON.parse(localStorage.getItem('userData')));
+      setCurruser(JSON.parse(localStorage.getItem('userData')));
 
-      axios.get(`http://localhost:5000/quizmadeby/${userid}`)
-      .then( (response) => setTableData(response.data))
+      axios.get(`http://localhost:5000/user/${userid}`)
+      .then( (response) => {
+        setUserData(response.data);
+        setIsLoading(false);
+      })
       .catch( (err) => setErrors([ { id : 0 , msg : err.message} ]));
 
 
@@ -64,23 +82,41 @@ const Profile = () => {
     //         {title : 'Siddartha' , score : 150},
     //         {title : 'Lavish' , score : 0},
     // ]
+
+
+    if(isLoading)
+        return <div
+                    style={{
+                        display : 'flex',
+                        alignItems : 'center',
+                        justifyContent : 'center',
+                        margin: '10% auto'
+                    }}
+                >
+                    <CircularProgress/>
+                </div>
     
 
-  return <div>
+    return <div>
 
-      { errors.length === 0 ? '' : (<ErrorAlert errors={errors} setErrors={setErrors}/>) }
-      {/* {console.log(tableData)} */}
+        { errors.length === 0 ? '' : (<ErrorAlert errors={errors} setErrors={setErrors}/>) }
+        {/* {console.log(userData)} */}
 
-      <div className={classes.profileDetails}>
+        <div className={classes.profileDetails}>
             <Avatar 
                 className={classes.avatarStyles}
                 sx={{
                     fontSize: '3em',
                     width: '130px',
-                    height: '130px'
+                    height: '130px',
+                    backgroundColor: `rgb(\
+                        ${Math.random() * 255}\
+                        ${Math.random() * 255}\
+                        ${Math.random() * 255}\
+                        )`,
                 }}
             >
-                L
+                {userData.name[0].toUpperCase()}
             </Avatar>
             <Typography 
                 variant="h5" 
@@ -91,30 +127,38 @@ const Profile = () => {
                     fontSize: '1.9em',
                 }}
             >
-                Lavish
+                {userData.name}
             </Typography>
-            <Button
-                variant="contained"
-                color="secondary"
-                sx={{
-                    margin: '0.5% 0'
-                }}
-                endIcon={<ExitToAppIcon/>}
-            >
-                Log Out
-            </Button>
-      </div>
-      <div
-        className={classes.madeQuizzesDetails}
-      >
-        <Typography 
-            variant="h4"
-            align="center"
-        >
-            My Quizzes
-        </Typography>
+            {
+                userData._id === curruser.userid && (
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        sx={{
+                            margin: '0.5% 0'
+                        }}
+                        endIcon={<ExitToAppIcon/>}
+                        onClick={logoutUser}
+                    >
+                        Log Out
+                    </Button>
+                )
+            }
+        </div>
 
-        <TableContainer
+
+
+        <div
+            className={classes.madeQuizzesDetails}
+        >
+            <Typography 
+                variant="h4"
+                align="center"
+            >
+                My Quizzes
+            </Typography>
+
+            <TableContainer
                 component={Paper}
                 style={{
                     margin : '3% auto',
@@ -124,53 +168,54 @@ const Profile = () => {
 
                 <Table sx={{ minWidth: 700 }} aria-label="customized table">
 
-                <TableHead>
+                    <TableHead>
 
-                    <TableRow>
-                    {/* <StyledTableCell align="center">Name</StyledTableCell>
-                    <StyledTableCell align="center">Score</StyledTableCell> */}
+                        <TableRow>
+                        {/* <StyledTableCell align="center">Name</StyledTableCell>
+                        <StyledTableCell align="center">Score</StyledTableCell> */}
 
-                        <TableCell align="center" style={{ backgroundColor : '#f03861' , color : 'white'}}>Title</TableCell>
-                        <TableCell align="center" style={{ backgroundColor : '#f03861' , color : 'white'}}>Made At</TableCell>
-                        <TableCell align="center" style={{ backgroundColor : '#f03861' , color : 'white'}}> Go To </TableCell>
+                            <TableCell align="center" style={{ backgroundColor : '#f03861' , color : 'white'}}>Title</TableCell>
+                            <TableCell align="center" style={{ backgroundColor : '#f03861' , color : 'white'}}>Made At</TableCell>
+                            <TableCell align="center" style={{ backgroundColor : '#f03861' , color : 'white'}}> Go To </TableCell>
 
-                    </TableRow>
+                        </TableRow>
 
-                </TableHead>
+                    </TableHead>
 
 
-                <TableBody>
-                    {/* { console.log(leaderboard[0]) } */}
-                    {tableData.map((row) => (
-                    /* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
-                    <StyledTableRow key={row._id}>
+                    <TableBody>
+                        {/* { console.log(leaderboard[0]) } */}
+                        {userData.quiz_made.map((row) => (
+                        /* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
+                        <StyledTableRow key={row._id}>
+                            
+                            <StyledTableCell component="th" scope="row" align="center">
+                            {row.title}
+                            </StyledTableCell>
+                            <StyledTableCell align="center">{new Date(row.madeAt).toLocaleDateString('hi',options)}</StyledTableCell>
+                            <StyledTableCell align="center">
+                                <Button
+                                    variant="contained"
+                                    color="success"
+                                    sx={{
+                                        textTransform: 'none',
+                                    }}
+                                    href={`\\quizfinal\\${row._id}`}
+                                >
+                                    See Details
+                                </Button>    
+                            </StyledTableCell>
+                            
+                        </StyledTableRow>
+                        ))}
                         
-                        <StyledTableCell component="th" scope="row" align="center">
-                        {row.title}
-                        </StyledTableCell>
-                        <StyledTableCell align="center">{row.madeAt}</StyledTableCell>
-                        <StyledTableCell align="center">
-                            <Button
-                                variant="contained"
-                                color="success"
-                                sx={{
-                                    textTransform: 'none',
-                                }}
-                            >
-                                See Details
-                            </Button>    
-                        </StyledTableCell>
-                        
-                    </StyledTableRow>
-                    ))}
-                    
-                </TableBody>
+                    </TableBody>
 
                 </Table>
 
             </TableContainer>
-      </div>
-  </div>;
-};
+        </div>
+    </div>;
+    };
 
 export default Profile;

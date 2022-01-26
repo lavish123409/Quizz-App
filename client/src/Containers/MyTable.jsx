@@ -29,21 +29,32 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 
 const MyTable = () => {
 
+    const options = {
+      year: 'numeric',
+      month:'long',
+      day:'numeric',
+      weekday: 'long',
+    };
+
     const [pastQuizData, setpastQuizData] = useState([]);
 
 
-    useEffect(async () => {
-      console.log('rnng');
+    useEffect( async () => {
+      // console.log('rnng');
 
         const user = JSON.parse(localStorage.getItem('userData'));
     //   console.log('uid : ' , user.userid);
 
         const response = await axios.get(`http://localhost:5000/quizgivenby/${user.userid}`);
-    //   console.log(response.data);
         setpastQuizData(response.data);
+        setpastQuizData( prevQuizData => {
+          prevQuizData.reverse();
+          return prevQuizData;
+        });        
+        
 
         return () => {
-        ;
+          setpastQuizData([]);
         };
     }, []);
     
@@ -78,16 +89,27 @@ const MyTable = () => {
                 <TableBody>
                     {/* { console.log(leaderboard[0]) } */}
                     {pastQuizData.map((row) => (
-                    /* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
-                    <StyledTableRow key={row._id}>
-                        
-                        <StyledTableCell component="th" scope="row" align="center">
-                        {row.title}
-                        </StyledTableCell>
-                        <StyledTableCell align="center">{row.score}</StyledTableCell>
-                        <StyledTableCell align="center">{row.givenAt.toLocaleString()}</StyledTableCell>
-                        
-                    </StyledTableRow>
+                      // <Link to={`\\quizfinal\\ ${row._id}`}>
+                        /* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
+                        <StyledTableRow 
+                          key={row._id} 
+                          onClick={() => window.location.assign(`\\quizfinal\\${row._id}`)}
+                          sx={{
+                            cursor: 'pointer',
+                            '&:hover': {
+                              backgroundColor: 'rgba(0, 0, 0, 0.18)'
+                            }
+                          }}
+                        >
+                            
+                            <StyledTableCell component="th" scope="row" align="center">
+                            {row.title}
+                            </StyledTableCell>
+                            <StyledTableCell align="center">{row.score}</StyledTableCell>
+                            <StyledTableCell align="center">{new Date(row.givenAt).toLocaleString('en-us',options)}</StyledTableCell>
+                            
+                        </StyledTableRow>
+                      // </Link>
                     ))}
                     
                 </TableBody>

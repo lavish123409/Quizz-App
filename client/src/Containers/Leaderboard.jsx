@@ -155,7 +155,9 @@ const Leaderboard = ({open , setOpen , quizid}) => {
                     {/* { console.log(leaderboard[0]) } */}
                     {leaderboard.map((row) => (
                     /* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
-                    <StyledTableRow key={row._id}>
+                    <StyledTableRow 
+                      key={row._id}
+                    >
                         
                         <StyledTableCell component="th" scope="row" align="center">
                         {row.name}

@@ -11,11 +11,18 @@ export default makeStyles({
   },
   quizcodesection: {
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    width: '40%'
   },
   quizcodesectionbutton: {
     padding: '15px',
-    marginLeft: '10px'
+    // marginLeft: '10px',
+    backgroundColor: '#6643b5',
+    color: '#fff',
+    '&:hover': {
+      backgroundColor: '#8971d0'
+    }
   },
   appbarButtons: {
     marginRight: '30px',

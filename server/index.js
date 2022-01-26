@@ -87,7 +87,7 @@ app.post("/addquiz", async (req, res) => {
   //   })
   //   .catch((err) => res.status(401).send({ errors: [err.message] }));
 
-  console.log("quizid : ", quizid);
+  // console.log("quizid : ", quizid);
 
   const quizForUserData = {
     _id: mongoose.Types.ObjectId(quizid),
@@ -97,15 +97,15 @@ app.post("/addquiz", async (req, res) => {
   // console.log("uid : ", req.body.userid);
 
   try {
-    await User.updateOne(
-      { _id: mongoose.Types.ObjectId(req.body.userid) },
+    await User.findByIdAndUpdate(
+      req.body.userid,
       {
         $push: { quiz_made: quizForUserData },
       },
       { safe: true, upsert: true }
     );
   } catch (err) {
-    return res.status(401).send({ errors: [err.message] });
+    return res.status(401).send({ message: err.message });
   }
 
   res.send(quizid);
@@ -363,7 +363,7 @@ app.get("/quizgivenby/:userid", async (req, res) => {
   res.send(response.quiz_given);
 });
 
-app.get("/quizmadeby/:userid", async (req, res) => {
+app.get("/user/:userid", async (req, res) => {
   const userid = req.params.userid;
   let response;
 
@@ -374,7 +374,7 @@ app.get("/quizmadeby/:userid", async (req, res) => {
     res.status(400).send({ errors: [err.message] });
   }
 
-  res.send(response.quiz_made);
+  res.send(response);
 });
 
 app.get("/checkif/:userid/hasgiven/:quizid", async (req, res) => {

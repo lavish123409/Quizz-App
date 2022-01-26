@@ -227,7 +227,7 @@ const Addquestion = () => {
               type="number"
               required
               id="time-given"
-              label="Time allotted for the question (in milliseconds)"
+              label="Time allotted for the question (in seconds)"
               variant="outlined"
               style={{
                 width: '50%',

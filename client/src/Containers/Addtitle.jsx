@@ -6,6 +6,7 @@ import ErrorAlert from './ErrorAlert';
 
 
 
+
 const Addtitle = ({ open , setOpen , data , setData }) => {
   const [quizLink, setQuizLink] = useState('');
   const [openQuizLink, setOpenQuizLink] = useState(false);
@@ -34,7 +35,15 @@ const Addtitle = ({ open , setOpen , data , setData }) => {
       return currentQuestionData;
     }); // Adding the title to the object to be sent
 
-    setData( previousQuestionData => ( {...previousQuestionData , userid : JSON.parse(localStorage.getItem('userData')).userid } ));
+    setData( previousQuestionData => {
+      const currentQuestionData = previousQuestionData;
+      currentQuestionData.userid = JSON.parse(localStorage.getItem('userData')).userid;
+      
+      return currentQuestionData;
+    }); // Adding the title to the object to be sent
+
+    // setData( previousQuestionData => ( {...previousQuestionData , userid : JSON.parse(localStorage.getItem('userData')).userid } ));
+    // console.log(data);
 
     /** this axios post request is sending the quiz data 
      * that is, its title, the data of questions (question , options , correct_answer , time_allotted)
@@ -50,6 +59,12 @@ const Addtitle = ({ open , setOpen , data , setData }) => {
       setErrors([ { id : 0 , msg : err.message} ]);
     });
 
+  }
+
+
+  const closeAddQuestion = () => {
+    navigator.clipboard.writeText(quizLink);
+    window.location.replace(`\\quizfinal\\${quizLink}`);
   }
 
 
@@ -123,7 +138,7 @@ const Addtitle = ({ open , setOpen , data , setData }) => {
         <DialogActions>
           <Button
             variant="contained"
-            onClick={() => navigator.clipboard.writeText(quizLink)}
+            onClick={() => closeAddQuestion(quizLink)}
           >
             Copy to Clipboard
           </Button>

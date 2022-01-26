@@ -217,7 +217,7 @@ const Home = () => {
     setIndex( ind => ind + 1);
 
     else
-    setIndex(0);
+    window.location.replace(`\\quizfinal\\${quizid}`);
 
   }
 
