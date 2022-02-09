@@ -29,14 +29,6 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     },
   }));
 
-  // False data
-  // const leaaderboard = [
-  //     {name : 'Parth' , score : 200},
-  //     {name : 'Harsh' , score : 300},
-  //     {name : 'Ayush' , score : 400},
-  //     {name : 'Siddartha' , score : 150},
-  //     {name : 'Lavish' , score : 0},
-  // ]
   
 
 const Leaderboard = ({open , setOpen , quizid}) => {
@@ -45,6 +37,11 @@ const Leaderboard = ({open , setOpen , quizid}) => {
       const [isLoading, setIsLoading] = useState(true);
       const [errors, setErrors] = useState([]);
 
+
+      /** This use effect runs whenever the Leaderboard component mounts in QuizArea
+       *  and it fetches the quiz data every time from the server
+       *  and then set the leaderboard state to the leaderboard array of that quiz
+       */
       useEffect( () => {
 
         /**
@@ -70,9 +67,11 @@ const Leaderboard = ({open , setOpen , quizid}) => {
           });
 
 
-        // return () => {
-        //   ;
-        // }
+        return () => {
+          setLeaderboard([]);
+          setIsLoading(true);
+          setErrors([]);
+        }
       }, []);
 
      return (
@@ -86,7 +85,6 @@ const Leaderboard = ({open , setOpen , quizid}) => {
 
       { errors.length === 0 ? '' : (<ErrorAlert errors={errors} setErrors={setErrors}/>) }
 
-        {/* { console.log(leaderboard)} */}
         {/* -----------------------------Nav Bar---------------------------------------------------- */}
         <AppBar sx={{ position: 'relative' }}>
           <Toolbar>
@@ -101,7 +99,7 @@ const Leaderboard = ({open , setOpen , quizid}) => {
             </IconButton>
 
             <Typography 
-                sx={{ ml: 2, flex: 1 }} 
+                // sx={{ m: '10 auto', flex: 1 }} 
                 variant="h6" 
                 component="div"
                 style={{
@@ -139,33 +137,36 @@ const Leaderboard = ({open , setOpen , quizid}) => {
       
                 <TableHead>
         
-                    <TableRow>
-                    {/* <StyledTableCell align="center">Name</StyledTableCell>
-                    <StyledTableCell align="center">Score</StyledTableCell> */}
-        
+                  <TableRow>
+      
                     <TableCell align="center" style={{ backgroundColor : 'black' , color : 'white'}}>Name</TableCell>
                     <TableCell align="center" style={{ backgroundColor : 'black' , color : 'white'}}>Score</TableCell>
-        
-                    </TableRow>
+      
+                  </TableRow>
         
                 </TableHead>
       
       
                 <TableBody>
-                    {/* { console.log(leaderboard[0]) } */}
-                    {leaderboard.map((row) => (
-                    /* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
-                    <StyledTableRow 
-                      key={row._id}
-                    >
-                        
-                        <StyledTableCell component="th" scope="row" align="center">
-                        {row.name}
-                        </StyledTableCell>
-                        <StyledTableCell align="center">{row.score}</StyledTableCell>
-                        
-                    </StyledTableRow>
-                    ))}
+
+                    {leaderboard.map((row) => {
+                      const currUserCellStyle = {
+                        backgroundColor: row._id === JSON.parse(localStorage.getItem('userData')).userid ? '#42b883 !important' : 'inherit',
+                        color: row._id === JSON.parse(localStorage.getItem('userData')).userid ? 'white !important' : 'inherit',
+                      };
+                    
+                      return (
+                      /* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
+                        <StyledTableRow key={row._id}>
+                            
+                          <StyledTableCell component="th" scope="row" align="center" style={currUserCellStyle}>
+                          {row.name}
+                          </StyledTableCell>
+                          <StyledTableCell align="center" style={currUserCellStyle}>{row.score}</StyledTableCell>
+                            
+                        </StyledTableRow>
+                      );
+                    })}
                     
                 </TableBody>
       

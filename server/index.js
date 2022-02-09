@@ -1,22 +1,22 @@
 const express = require("express");
 const cors = require("cors");
+
 const dotenv = require("dotenv");
+
 const mongoose = require("mongoose");
 const Quiz = require("./models/quizSchema");
 const User = require("./models/userSchema");
-const { body, validationResult } = require("express-validator");
+
+const { validationResult } = require("express-validator");
+const registerRules = require("./validation/registerRules");
+const loginRules = require("./validation/loginRules");
+
 const bcryptjs = require("bcryptjs");
+
 const jwt = require("jsonwebtoken");
 const verify = require("./routes/verifyToken");
+
 dotenv.config();
-
-// const Joi = require("@hapi/joi");
-
-// const userValidationSchema = {
-//   name: Joi.string().max(256).required(),
-//   email: Joi.string().min(5).max(256).email().required(),
-//   password: Joi.string().min(8).required(),
-// };
 
 const app = express();
 
@@ -44,10 +44,6 @@ mongoose
     app.listen(port, () => console.log(`app listening  on ${port}`));
   });
 
-app.get("/allquizzes", (req, res) => {
-  Quiz.find().then((data) => res.send(data));
-});
-
 // For getting a particular quiz with quiz id
 app.get("/quiz/:quizid", verify, (req, res) => {
   const quizID = req.params.quizid;
@@ -58,6 +54,8 @@ app.get("/quiz/:quizid", verify, (req, res) => {
 
 // For adding a quiz and then sending back the id
 app.post("/addquiz", async (req, res) => {
+  /** First, we would add the quiz to our database */
+
   const quizData = {
     title: req.body.title,
     questions: req.body.questions,
@@ -67,7 +65,6 @@ app.post("/addquiz", async (req, res) => {
   const quiz = new Quiz(quizData);
   let quizid = "",
     response;
-  // console.log(req.body);
 
   try {
     response = await quiz.save();
@@ -75,26 +72,16 @@ app.post("/addquiz", async (req, res) => {
     return res.status(401).send({ errors: [err.message] });
   }
 
-  // console.log(response);
-
   quizid = response._id.toString();
 
-  // quiz
-  //   .save()
-  //   .then((data) => {
-  //     quizid = data._id.toString();
-  //     res.send(data._id.toString());
-  //   })
-  //   .catch((err) => res.status(401).send({ errors: [err.message] }));
-
-  // console.log("quizid : ", quizid);
+  /**
+   * Now, we have to put the entry of the quiz in the quiz_given field of user
+   */
 
   const quizForUserData = {
     _id: mongoose.Types.ObjectId(quizid),
     title: quizData.title,
   };
-
-  // console.log("uid : ", req.body.userid);
 
   try {
     await User.findByIdAndUpdate(
@@ -108,211 +95,99 @@ app.post("/addquiz", async (req, res) => {
     return res.status(401).send({ message: err.message });
   }
 
+  /** Send the quiz id at the end */
   res.send(quizid);
-
-  // if (quizid !== "") {
-  //   User.updateOne(
-  //     { _id: mongoose.Types.ObjectId(req.body.userid) },
-  //     {
-  //       $push: { quiz_made: quizForUserData },
-  //     },
-  //     { safe: true, upsert: true }
-  //   );
-  // .then((data) => res.send(data))
-  // .catch((err) => res.status(401).send({ errors: [err.message] }));
-  // }
 });
 
-app.post(
-  "/register",
-  [
-    body("name").exists().withMessage("Name is mandatory"),
+app.post("/register", registerRules, async (req, res) => {
+  /** First, get all the errors related to validation of parameters */
 
-    body("name")
-      .isLength({ max: 256 })
-      .withMessage("Name should contain maximum 256 characters"),
+  let errors = validationResult(req).errors;
+  errors = errors.map((error) => error.msg);
 
-    body("email").isEmail().withMessage("Given Email is invalid"),
+  /** If errors array of validation is not empty, then send those errors to client  */
+  if (!(errors.length === 0)) return res.status(400).send({ errors });
 
-    body("email")
-      .isLength({ max: 256 })
-      .withMessage("Email should contain maximum 256 characters"),
+  /** Check whether the Email from which the user wants to Sign In is already registered, then remind user to Login */
+  const emailExist = await User.findOne({ email: req.body.email });
+  if (emailExist)
+    return res
+      .status(401)
+      .send({ errors: ["Email already exists. You might need to login."] });
 
-    body("email")
-      .isLength({ min: 5 })
-      .withMessage("Email should contain minimum 5 characters"),
+  /** Hash the password using a random salt before storing it in Database */
+  const salt = await bcryptjs.genSalt(10);
+  const hashedPassword = await bcryptjs.hash(req.body.password, salt);
 
-    body("password")
-      .isLength({ min: 8 })
-      .withMessage("Password should contain minimum 8 characters"),
+  /** Now, Save the User details in Database */
+  const userData = {
+    name: req.body.name,
+    email: req.body.email,
+    password: hashedPassword,
+    quiz_given: [],
+    quiz_made: [],
+  };
 
-    body("password")
-      .isLength({ max: 1024 })
-      .withMessage("Password should contain maximum 1024 characters"),
+  let user = new User(userData);
 
-    body("password").exists().withMessage("Password is mandatory"),
-  ],
-  async (req, res) => {
-    // console.log(validationResult(req));
+  user
+    .save()
+    .then((data) => {
+      const token = jwt.sign({ _id: data._id }, process.env.TOKEN_SECRET);
 
-    // const validation = Joi.validate(req.body, userValidationSchema);
-    // res.send(validation);
-    //   console.log(req.body);
+      const responseData = {
+        token,
+        userData: {
+          userid: data._id,
+          name: data.name,
+        },
+      };
+      res.send(responseData);
+    })
+    .catch((err) => res.status(400).send({ errors: [err.message] }));
+});
 
-    let errors = validationResult(req).errors;
-    errors = errors.map((error) => error.msg);
-    // console.log(typeof errors);
+app.post("/login", loginRules, async (req, res) => {
+  /** First, get all the errors related to validation of parameters */
 
-    // if (!(errors === null)) return res.status(400).send({ errors });
-    if (!(errors.length === 0)) return res.status(400).send({ errors });
+  let errors = validationResult(req).errors;
+  errors = errors.map((error) => error.msg);
 
-    const emailExist = await User.findOne({ email: req.body.email });
-    if (emailExist)
-      return res
-        .status(401)
-        .send({ errors: ["Email already exists. You might need to login."] });
+  /** If errors array of validation is not empty, then send those errors to client  */
+  if (!(errors.length === 0)) return res.status(400).send({ errors });
 
-    const salt = await bcryptjs.genSalt(10);
-    const hashedPassword = await bcryptjs.hash(req.body.password, salt);
+  /** Checking if the user has already registered using his/her Email */
+  const user = await User.findOne({ email: req.body.email });
+  if (!user)
+    return res.status(401).send({ errors: ["Email or password is invalid."] });
 
-    const userData = {
-      name: req.body.name,
-      email: req.body.email,
-      password: hashedPassword,
-      quiz_given: [],
-      quiz_made: [],
-    };
-    let user = new User(userData);
-    // console.log(user);
-    user
-      .save()
-      .then((data) => {
-        const token = jwt.sign({ _id: data._id }, process.env.TOKEN_SECRET);
-
-        const responseData = {
-          token,
-          userData: {
-            userid: data._id,
-            name: data.name,
-          },
-        };
-        res.send(responseData);
-      })
-      .catch((err) => res.status(400).send({ errors: [err.message] }));
-  }
-);
-
-app.post(
-  "/login",
-  [
-    body("email").isEmail().withMessage("Given Email is invalid"),
-
-    // body("email")
-    //   .isLength({ max: 256 })
-    //   .withMessage("Email should contain maximum 256 characters"),
-
-    // body("email")
-    //   .isLength({ min: 5 })
-    //   .withMessage("Email should contain minimum 5 characters"),
-
-    body("password").notEmpty().withMessage("Password is mandatory"),
-  ],
-  async (req, res) => {
-    // console.log(validationResult(req));
-
-    // const validation = Joi.validate(req.body, userValidationSchema);
-    // res.send(validation);
-    //   console.log(req.body);
-
-    let errors = validationResult(req).errors;
-    errors = errors.map((error) => error.msg);
-    // console.log(errors);
-
-    if (!(errors.length === 0)) return res.status(400).send({ errors });
-
-    const user = await User.findOne({ email: req.body.email });
-    if (!user)
-      return res
-        .status(401)
-        .send({ errors: ["Email or password is invalid."] });
-
-    const isValidPassword = await bcryptjs.compare(
-      req.body.password,
-      user.password
-    );
-    if (!isValidPassword)
-      return res
-        .status(401)
-        .send({ errors: ["Email or password is invalid."] });
-
-    const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
-
-    res.set("auth-token", "token");
-    const responseData = {
-      token,
-      userData: {
-        userid: user._id,
-        name: user.name,
-      },
-    };
-    res.send(responseData);
-  }
-);
-
-app.put("/updatescore/:quizid", async (req, res) => {
-  // console.log(req.params);
-  // console.log(req.body);
-
-  const quizid = req.params.quizid;
-  // const leaderboardData = {
-  //   _id: mongoose.Types.ObjectId(req.body.userid),
-  //   name: req.body.name,
-  //   score: req.body.score,
-  // };
-
-  const response = await Quiz.updateOne(
-    { _id: mongoose.Types.ObjectId(quizid) },
-    {
-      $set: {
-        "leaderboard.$[userid].score": req.body.score,
-      },
-    },
-    {
-      arrayFilters: [
-        { "userid._id": mongoose.Types.ObjectId(req.body.userid) },
-      ],
-    }
+  /** Checking whether the password entered by user is correct or not */
+  const isValidPassword = await bcryptjs.compare(
+    req.body.password,
+    user.password
   );
 
-  await User.updateOne(
-    { _id: mongoose.Types.ObjectId(req.body.userid) },
-    {
-      $set: {
-        "quiz_given.$[quizid].score": req.body.score,
-      },
-    },
-    {
-      arrayFilters: [{ "quizid._id": mongoose.Types.ObjectId(quizid) }],
-    }
-  );
+  /** If the entered password is not valid, send the error */
+  if (!isValidPassword)
+    return res.status(401).send({ errors: ["Email or password is invalid."] });
 
-  // console.log(response);
-  //   {},
-  //   (err, model) => {
-  //     // console.log("update ran");
-  //     if (err) return console.log(err);
-  //     console.log(model);
-  //     res.send(err);
-  //     // console.log("update ran");
-  //     // return res.json(model);
-  //   }
-  // );
+  /** Generating the JWT token to send back to user */
+  const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
+
+  // res.set("auth-token", "token"); [NOT WORKING] Don't know why
+  const responseData = {
+    token,
+    userData: {
+      userid: user._id,
+      name: user.name,
+    },
+  };
+
+  res.send(responseData);
 });
 
 app.post("/updatescore/:quizid", async (req, res) => {
-  // console.log("in post");
-  // console.log(req.params);
-  // console.log(req.body);
+  /** Adding the name and score object to leaderboard array of Quiz */
 
   const quizid = req.params.quizid;
   const leaderboardData = {
@@ -327,13 +202,9 @@ app.post("/updatescore/:quizid", async (req, res) => {
       $push: { leaderboard: leaderboardData },
     },
     { safe: true, upsert: true }
-    // (err, model) => {
-    //   if (err) return res.send(err);
-    //   quizTitle = model.title;
-    //   console.log(model);
-    //   return res.json(model);
-    // }
   );
+
+  /** Adding the title and score object to quiz_given array of User */
 
   const userQuizData = {
     _id: mongoose.Types.ObjectId(quizid),
@@ -345,31 +216,48 @@ app.post("/updatescore/:quizid", async (req, res) => {
     $push: { quiz_given: userQuizData },
   });
 
-  // console.log("response : ", response);
   res.send(response);
 });
 
-app.get("/quizgivenby/:userid", async (req, res) => {
-  const userid = req.params.userid;
-  let response;
+app.put("/updatescore/:quizid", async (req, res) => {
+  const quizid = req.params.quizid;
 
-  try {
-    response = await User.findById(userid);
-    // console.log("userdata : ", response);
-  } catch (err) {
-    res.status(400).send(err.message);
-  }
+  /** Updating the score field in leaderboard array of the Quiz */
+  await Quiz.updateOne(
+    { _id: mongoose.Types.ObjectId(quizid) },
+    {
+      $set: {
+        "leaderboard.$[userid].score": req.body.score,
+      },
+    },
+    {
+      arrayFilters: [
+        { "userid._id": mongoose.Types.ObjectId(req.body.userid) },
+      ],
+    }
+  );
 
-  res.send(response.quiz_given);
+  /** Updating the score field of quiz_given array of User  */
+  await User.updateOne(
+    { _id: mongoose.Types.ObjectId(req.body.userid) },
+    {
+      $set: {
+        "quiz_given.$[quizid].score": req.body.score,
+      },
+    },
+    {
+      arrayFilters: [{ "quizid._id": mongoose.Types.ObjectId(quizid) }],
+    }
+  );
 });
 
+// Route to get the specific user from Database
 app.get("/user/:userid", async (req, res) => {
   const userid = req.params.userid;
   let response;
 
   try {
     response = await User.findById(userid);
-    // console.log("userdata : ", response);
   } catch (err) {
     res.status(400).send({ errors: [err.message] });
   }
@@ -377,11 +265,9 @@ app.get("/user/:userid", async (req, res) => {
   res.send(response);
 });
 
+// Route to check whether the given user has attempted the given quiz already or not
 app.get("/checkif/:userid/hasgiven/:quizid", async (req, res) => {
   const { userid, quizid } = req.params;
-
-  // console.log("uid : ", userid);
-  // console.log("qid : ", quizid);
 
   let response;
 
@@ -404,7 +290,8 @@ app.get("/checkif/:userid/hasgiven/:quizid", async (req, res) => {
     res.status(400).send({ errors: [err.message] });
   }
 
-  // console.log(response[0].matchedIndex !== -1);
-
+  /** The 'matchedIndex' would be -1 if the id of given quiz is not present in quiz_given array of user
+   *  or, in other words we can say that, the user has not given that quiz
+   */
   res.send({ result: response[0].matchedIndex !== -1 });
 });

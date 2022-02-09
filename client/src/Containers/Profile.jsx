@@ -1,13 +1,19 @@
 import { Avatar, Button, CircularProgress, Paper, styled, Table, TableBody, TableCell, tableCellClasses, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
+import axios from 'axios';
+
 import useStyles from './Styles/ProfileStyles';
+
 import ErrorAlert from './ErrorAlert';
 
 
+    /** These functions are styling the rows of React table
+     *  [MAYBE NOT WORKING]
+     */
     const StyledTableCell = styled(TableCell)(({ theme }) => ({
         [`&.${tableCellClasses.head}`]: {
         backgroundColor: theme.palette.common.blue,
@@ -30,10 +36,11 @@ import ErrorAlert from './ErrorAlert';
     }));
 
 
+    // This function is used to Log Out the user by clearing the local storage and sending to home page
     const logoutUser = () => {
         localStorage.clear();
         window.location.replace('/');
-      };
+    };
 
 
 
@@ -45,9 +52,8 @@ const Profile = () => {
         month:'long',
         day:'numeric',
         weekday: 'long',
-   };
+    };
 
-    // const [user, setUser] = useState({});
     const [errors, setErrors] = useState([]);
     const [userData, setUserData] = useState({});
     const [curruser, setCurruser] = useState(null);
@@ -57,31 +63,32 @@ const Profile = () => {
     const classes = useStyles();
 
     useEffect(() => {
-    //   console.log('rnng');
-      setCurruser(JSON.parse(localStorage.getItem('userData')));
 
-      axios.get(`http://localhost:5000/user/${userid}`)
-      .then( (response) => {
-        setUserData(response.data);
-        setIsLoading(false);
-      })
-      .catch( (err) => setErrors([ { id : 0 , msg : err.message} ]));
+        /** setting the current user data from localstorage */
+        setCurruser(JSON.parse(localStorage.getItem('userData')));
+
+        /**
+         * Axios GET request to get the user data of the profile user
+         * and then store it in userData state
+         * we are also stopping loading state
+         */
+        axios.get(`http://localhost:5000/user/${userid}`)
+        .then( (response) => {
+            setUserData(response.data);
+            setIsLoading(false);
+        })
+        .catch( (err) => setErrors([ { id : 0 , msg : err.message} ]));
 
 
-    
-      return () => {
-        ;
-      };
+
+        return () => {
+            setErrors([]);
+            setUserData({});
+            setCurruser(null);
+            setIsLoading(true);
+        };
     }, []);
 
-
-    // const pastQuizData = [
-    //         {title : 'Parth' , score : 200},
-    //         {title : 'Harsh' , score : 300},
-    //         {title : 'Ayush' , score : 400},
-    //         {title : 'Siddartha' , score : 150},
-    //         {title : 'Lavish' , score : 0},
-    // ]
 
 
     if(isLoading)
@@ -100,9 +107,9 @@ const Profile = () => {
     return <div>
 
         { errors.length === 0 ? '' : (<ErrorAlert errors={errors} setErrors={setErrors}/>) }
-        {/* {console.log(userData)} */}
 
         <div className={classes.profileDetails}>
+            
             <Avatar 
                 className={classes.avatarStyles}
                 sx={{
@@ -118,6 +125,7 @@ const Profile = () => {
             >
                 {userData.name[0].toUpperCase()}
             </Avatar>
+            
             <Typography 
                 variant="h5" 
                 className={classes.nameStyles}
@@ -129,7 +137,11 @@ const Profile = () => {
             >
                 {userData.name}
             </Typography>
+            
             {
+                /** If user in the profile is the current logged in user
+                 * then show the Log Out button
+                 */
                 userData._id === curruser.userid && (
                     <Button
                         variant="contained"
@@ -144,6 +156,7 @@ const Profile = () => {
                     </Button>
                 )
             }
+
         </div>
 
 
@@ -171,8 +184,6 @@ const Profile = () => {
                     <TableHead>
 
                         <TableRow>
-                        {/* <StyledTableCell align="center">Name</StyledTableCell>
-                        <StyledTableCell align="center">Score</StyledTableCell> */}
 
                             <TableCell align="center" style={{ backgroundColor : '#f03861' , color : 'white'}}>Title</TableCell>
                             <TableCell align="center" style={{ backgroundColor : '#f03861' , color : 'white'}}>Made At</TableCell>
@@ -184,7 +195,7 @@ const Profile = () => {
 
 
                     <TableBody>
-                        {/* { console.log(leaderboard[0]) } */}
+                        
                         {userData.quiz_made.map((row) => (
                         /* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
                         <StyledTableRow key={row._id}>

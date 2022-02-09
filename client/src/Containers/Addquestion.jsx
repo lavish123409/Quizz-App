@@ -13,7 +13,7 @@ const Addquestion = () => {
     title : '',
     questions : [],
     leaderboard : []
-  });
+  }); // question data to be sent to DB
   const [fieldErrors, setFieldErrors] = useState({
     question: false,
     option1: false,
@@ -22,7 +22,7 @@ const Addquestion = () => {
     option4: false,
     correctanswer: false,
     timegiven: false
-  });
+  }); // fieldErrors object to set the error on every text field
   const [errors, setErrors] = useState([]);
 
 
@@ -35,48 +35,56 @@ const Addquestion = () => {
     const correctAnswer = document.getElementById('correct-answer').value;
     const timeGiven = document.getElementById('time-given').value;
 
+    /** If question field is empty, display the error on question text field */
     if(question === '')
     {
       setFieldErrors(prevValue => ({...prevValue , question : true}));
       return;
     }
 
+    /** If option 1 field is empty, display the error on option 1 text field */
     if(option1 === '')
     {
       setFieldErrors(prevValue => ({...prevValue , option1 : true}));
       return;
     }
 
+    /** If option 2 field is empty, display the error on option 2 text field */
     if(option2 === '')
     {
       setFieldErrors(prevValue => ({...prevValue , option2 : true}));
       return;
     }
 
+    /** If option 3 field is empty, display the error on option 3 text field */
     if(option3 === '')
     {
       setFieldErrors(prevValue => ({...prevValue , option3 : true}));
       return;
     }
 
+    /** If option 4 field is empty, display the error on option 4 text field */
     if(option4 === '')
     {
       setFieldErrors(prevValue => ({...prevValue , option4 : true}));
       return;
     }
 
+    /** If correct answer field is empty, display the error on correct answer text field */
     if(correctAnswer === '')
     {
       setFieldErrors(prevValue => ({...prevValue , correctanswer : true}));
       return;
     }
 
+    /** If correct answer is not one of the given option, then show the error */
     if(!(correctAnswer === option1 || correctAnswer === option2 || correctAnswer === option3 || correctAnswer === option4))
     {
       setErrors([ { id : 0 , msg : 'Correct answer should be one of the options.'} ]);
       return;
     }
 
+    /** If time given field is empty, display the error on time given text field */
     if(timeGiven === '')
     {
       setFieldErrors(prevValue => ({...prevValue , timegiven : true}));

@@ -1,10 +1,15 @@
 import { Button, CircularProgress, Paper, styled, Table, TableBody, TableCell, tableCellClasses, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
-import axios from 'axios';
+
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+
+import axios from 'axios';
+
 import ErrorAlert from './ErrorAlert';
 
-
+/** These functions are styling the rows of React table
+ *  [MAYBE NOT WORKING]
+ */
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
       backgroundColor: theme.palette.common.blue,
@@ -16,7 +21,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   }));
 
 
-  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
     '&:nth-of-type(odd)': {
       backgroundColor: theme.palette.action.hover,
     },
@@ -36,35 +41,37 @@ const QuizFinal = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [errors, setErrors] = useState([]);
 
-      useEffect( () => {
+    useEffect( () => {
 
         /**
          * This axios get request is calling the server to give
          * the details of the specific quiz with the given id
          * and then setting the quiz data with it
          */
-         axios.get(`http://localhost:5000/quiz/${quizid}` , {
-              headers : {
-                  'auth-token' : localStorage.getItem('userToken')
-              }
-          })
-          .then(res => {
+        axios.get(`http://localhost:5000/quiz/${quizid}` , {
+            headers : {
+                'auth-token' : localStorage.getItem('userToken')
+            }
+        })
+        .then(res => {
             setLeaderboard(res.data.leaderboard);
             setLeaderboard( prevleaderboard => {
-              prevleaderboard.sort( (a,b) => b.score - a.score);
-              return prevleaderboard;
+            prevleaderboard.sort( (a,b) => b.score - a.score);
+            return prevleaderboard;
             });
             setIsLoading(false);
-          })
-          .catch( err => {
+        })
+        .catch( err => {
             setErrors([ { id : 0 , msg : err.message} ]);
-          });
+        });
 
-
-        // return () => {
-        //   ;
-        // }
-      }, []);
+        /** when this component unmounts, initialize all states to default */
+        return () => {
+            setLeaderboard([]);
+            setIsLoading(true);
+            setErrors([]);
+        }
+    }, []);
 
 
 
@@ -72,13 +79,13 @@ const QuizFinal = () => {
 
     { errors.length === 0 ? '' : (<ErrorAlert errors={errors} setErrors={setErrors}/>) }
 
-        <div
-            style={{
-                margin: '5% 0',
-                padding: '3% 0',
-                backgroundColor: 'black'
-            }}
-        >
+    <div
+        style={{
+            margin: '5% 0',
+            padding: '3% 0',
+            backgroundColor: 'black'
+        }}
+    >
         <Paper
             sx={{
                 width: '85%',
@@ -89,6 +96,7 @@ const QuizFinal = () => {
                 justifyContent: 'space-evenly'
             }}
         >
+
             <TextField
                 variant="outlined"
                 margin="normal"
@@ -102,6 +110,7 @@ const QuizFinal = () => {
                     flex: '0.8'
                 }}
             />
+
             <Button
                 variant="contained"
                 color="primary"
@@ -115,33 +124,35 @@ const QuizFinal = () => {
             >
                 Copy
             </Button>
+
         </Paper>
+    </div>
+
+    {isLoading ? (
+
+        <div
+            style={{
+                display : 'flex',
+                alignItems : 'center',
+                justifyContent : 'center',
+            }}
+        >
+            <CircularProgress/>
         </div>
 
-        {isLoading ? (
-
-            <div
-                style={{
-                    display : 'flex',
-                    alignItems : 'center',
-                    justifyContent : 'center',
-                }}
-            >
-                <CircularProgress/>
-            </div>
-
-        ) : (
+    ) : (
 
 
-            <div
+        <div
             style={{
                 width: '90%',
                 margin: '1% auto',
                 padding: '1.5% 0',
                 borderRadius: '5px',
                 boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px'
-                }}
-            >
+            }}
+        >
+
             <Typography 
                 variant="h4"
                 align="center"
@@ -150,32 +161,37 @@ const QuizFinal = () => {
             </Typography>
 
             <TableContainer
-                    component={Paper}
-                    style={{
-                        margin : '3% auto',
-                        width : '90%'
-                    }}
-                >
+                component={Paper}
+                style={{
+                    margin : '3% auto',
+                    width : '90%'
+                }}
+            >
 
-                    <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                <Table sx={{ minWidth: 700 }} aria-label="customized table">
 
-                    <TableHead>
+                <TableHead>
 
-                        <TableRow>
-                        {/* <StyledTableCell align="center">Name</StyledTableCell>
-                        <StyledTableCell align="center">Score</StyledTableCell> */}
+                    <TableRow>
 
-                            <TableCell align="center" style={{ backgroundColor : '#f03861' , color : 'white'}}>Name</TableCell>
-                            <TableCell align="center" style={{ backgroundColor : '#f03861' , color : 'white'}}>Score</TableCell>
+                        <TableCell align="center" style={{ backgroundColor : '#f03861' , color : 'white'}}>Name</TableCell>
+                        <TableCell align="center" style={{ backgroundColor : '#f03861' , color : 'white'}}>Score</TableCell>
 
-                        </TableRow>
+                    </TableRow>
 
-                    </TableHead>
+                </TableHead>
 
 
-                    <TableBody>
-                        {/* { console.log(leaderboard[0]) } */}
-                        {leaderboard.map((row) => (
+                <TableBody>
+                    
+                    
+                    {leaderboard.map((row) => {
+                        const currUserCellStyle = {
+                            backgroundColor: row._id === JSON.parse(localStorage.getItem('userData')).userid ? '#42b883 !important' : 'inherit',
+                            color: row._id === JSON.parse(localStorage.getItem('userData')).userid ? 'white !important' : 'inherit',
+                        };
+                    
+                    return (
                         /* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
                         <StyledTableRow 
                             key={row._id}
@@ -184,25 +200,27 @@ const QuizFinal = () => {
                                 cursor: 'pointer',
                                 '&:hover': {
                                 backgroundColor: 'rgba(0, 0, 0, 0.18)'
-                                }
+                                },
                             }}
                         >
-                            
-                            <StyledTableCell component="th" scope="row" align="center">
-                            {row.name}
+                            <StyledTableCell component="th" scope="row" align="center" sx={currUserCellStyle} >
+                                {row.name}
                             </StyledTableCell>
-                            <StyledTableCell align="center">{row.score}</StyledTableCell>
+                            <StyledTableCell align="center" sx={currUserCellStyle} >
+                                {row.score}
+                            </StyledTableCell>
                             
                         </StyledTableRow>
-                        ))}
-                        
-                    </TableBody>
+                    );
+                            })}
+                    
+                </TableBody>
 
-                    </Table>
+                </Table>
 
-                </TableContainer>
-            </div>
-        )}
+            </TableContainer>
+        </div>
+    )}
   </div>;
 };
 

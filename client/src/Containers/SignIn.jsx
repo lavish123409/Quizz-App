@@ -1,6 +1,8 @@
 import { Avatar, Box, Button, Container, Grid, Link, Paper, TextField, Typography } from '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+
 import axios from 'axios';
+
 import React, { useState } from 'react';
 import ErrorAlert from './ErrorAlert';
 
@@ -38,27 +40,16 @@ const SignIn = () => {
                 }));
             });
     }
-
-    // let errrender;
-
-    // useEffect(() => {
-    //   console.log('rnnnnn');
-    // //   errrender = errors.length === 0 ? '' : (<ErrorAlert errors={errors} setErrors={setErrors}/>)
-    
-    //   return () => {
-    //     ;
-    //   };
-    // }, [errors.length]);
     
 
 
     return (
         <div>
 
-            {/* {console.log(errors)} */}
             { errors.length === 0 ? '' : (<ErrorAlert errors={errors} setErrors={setErrors}/>) }
 
             <Container component="main" maxWidth="sm">
+                
                 <Paper
                     elevation={3}
                     style={{
@@ -68,6 +59,7 @@ const SignIn = () => {
                         alignItems: 'center',
                     }}
                 >
+
                     <Avatar style={{ margin: '5%', backgroundColor: 'purple' }}>
                         <LockOutlinedIcon />
                     </Avatar>
@@ -77,6 +69,7 @@ const SignIn = () => {
                     </Typography>
 
                     <Box component="form" onSubmit={(e) => handleSubmit(e)} noValidate style={{ padding: '10%' }}>
+                        
                         <TextField
                             variant="outlined"
                             margin="normal"
@@ -88,6 +81,7 @@ const SignIn = () => {
                             autoComplete="email"
                             autoFocus
                         />
+                        
                         <TextField
                             variant="outlined"
                             margin="normal"
@@ -99,10 +93,7 @@ const SignIn = () => {
                             id="password"
                             autoComplete="current-password"
                         />
-                        {/* <FormControlLabel
-                        control={<Checkbox value="remember" color="primary" />}
-                        label="Remember me"
-                        /> */}
+                        
                         <Button
                             color="primary"
                             type="submit"
@@ -112,20 +103,19 @@ const SignIn = () => {
                         >
                         Sign In
                         </Button>
+                        
                         <Grid container>
-                        {/* <Grid item xs>
-                            <Link href="#" variant="body2">
-                            Forgot password?
-                            </Link>
-                        </Grid> */}
                             <Grid item>
                                 <Link href="/signup" variant="body2">
                                 Do not have an account? Sign Up
                                 </Link>
                             </Grid>
                         </Grid>
+
                     </Box>
+
                 </Paper>
+
             </Container>
         </div>
     )

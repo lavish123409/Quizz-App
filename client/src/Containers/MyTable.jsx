@@ -1,17 +1,22 @@
 import { Paper, styled, Table, TableBody, TableCell, tableCellClasses, TableContainer, TableHead, TableRow } from '@mui/material';
-import axios from 'axios';
+
 import React, { useEffect, useState } from 'react';
 
+import axios from 'axios';
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    [`&.${tableCellClasses.head}`]: {
-      backgroundColor: theme.palette.common.blue,
-      color: theme.palette.common.white,
-    },
-    [`&.${tableCellClasses.body}`]: {
-      fontSize: 14,
-    },
-  }));
+
+  /** These functions are styling the rows of React table
+   *  [MAYBE NOT WORKING]
+   */
+  const StyledTableCell = styled(TableCell)(({ theme }) => ({
+      [`&.${tableCellClasses.head}`]: {
+        backgroundColor: theme.palette.common.blue,
+        color: theme.palette.common.white,
+      },
+      [`&.${tableCellClasses.body}`]: {
+        fontSize: 14,
+      },
+    }));
 
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
@@ -29,94 +34,98 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 
 const MyTable = () => {
 
-    const options = {
-      year: 'numeric',
-      month:'long',
-      day:'numeric',
-      weekday: 'long',
+  /** Options for Date object */
+  const options = {
+    year: 'numeric',
+    month:'long',
+    day:'numeric',
+    weekday: 'long',
+  };
+
+  const [pastQuizData, setpastQuizData] = useState([]);
+
+
+  /** This use effect would run whenever MyTable component would load on Home page
+   *  and it would fetch all the user data from Database
+   *  and then set the pastQuizData state to the quiz_given array of user to display it to user
+   */
+  useEffect( async () => {
+
+    const user = JSON.parse(localStorage.getItem('userData'));
+
+    /** Axios GET request to get the user object from Database
+     *  and then initialize the quiz_given by array to pastQuizData for displaying in the table
+     */
+    const response = await axios.get(`http://localhost:5000/user/${user.userid}`);
+    setpastQuizData(response.data.quiz_given);
+    setpastQuizData( prevQuizData => {
+      prevQuizData.reverse();
+      return prevQuizData;
+    });        
+    
+
+    return () => {
+      /** when the component unmounts, set the pastQuizData state to null */
+      setpastQuizData([]);
     };
-
-    const [pastQuizData, setpastQuizData] = useState([]);
-
-
-    useEffect( async () => {
-      // console.log('rnng');
-
-        const user = JSON.parse(localStorage.getItem('userData'));
-    //   console.log('uid : ' , user.userid);
-
-        const response = await axios.get(`http://localhost:5000/quizgivenby/${user.userid}`);
-        setpastQuizData(response.data);
-        setpastQuizData( prevQuizData => {
-          prevQuizData.reverse();
-          return prevQuizData;
-        });        
-        
-
-        return () => {
-          setpastQuizData([]);
-        };
-    }, []);
+    
+  }, []);
     
 
 
   return <div>
         <TableContainer
-                component={Paper}
-                style={{
-                    margin : '3% auto',
-                    width : '90%'
-                }}
-            >
+            component={Paper}
+            style={{
+                margin : '3% auto',
+                width : '90%'
+            }}
+        >
 
-                <Table sx={{ minWidth: 700 }} aria-label="customized table">
+            <Table sx={{ minWidth: 700 }} aria-label="customized table">
 
-                <TableHead>
+            <TableHead>
 
-                    <TableRow>
-                    {/* <StyledTableCell align="center">Name</StyledTableCell>
-                    <StyledTableCell align="center">Score</StyledTableCell> */}
+                <TableRow>
 
-                        <TableCell align="center" style={{ backgroundColor : '#f03861' , color : 'white'}}>Title</TableCell>
-                        <TableCell align="center" style={{ backgroundColor : '#f03861' , color : 'white'}}>Score</TableCell>
-                        <TableCell align="center" style={{ backgroundColor : '#f03861' , color : 'white'}}>Given At</TableCell>
+                  <TableCell align="center" style={{ backgroundColor : '#f03861' , color : 'white'}}>Title</TableCell>
+                  <TableCell align="center" style={{ backgroundColor : '#f03861' , color : 'white'}}>Score</TableCell>
+                  <TableCell align="center" style={{ backgroundColor : '#f03861' , color : 'white'}}>Given At</TableCell>
 
-                    </TableRow>
+                </TableRow>
 
-                </TableHead>
+            </TableHead>
 
 
-                <TableBody>
-                    {/* { console.log(leaderboard[0]) } */}
-                    {pastQuizData.map((row) => (
-                      // <Link to={`\\quizfinal\\ ${row._id}`}>
-                        /* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
-                        <StyledTableRow 
-                          key={row._id} 
-                          onClick={() => window.location.assign(`\\quizfinal\\${row._id}`)}
-                          sx={{
-                            cursor: 'pointer',
-                            '&:hover': {
-                              backgroundColor: 'rgba(0, 0, 0, 0.18)'
-                            }
-                          }}
-                        >
-                            
-                            <StyledTableCell component="th" scope="row" align="center">
-                            {row.title}
-                            </StyledTableCell>
-                            <StyledTableCell align="center">{row.score}</StyledTableCell>
-                            <StyledTableCell align="center">{new Date(row.givenAt).toLocaleString('en-us',options)}</StyledTableCell>
-                            
-                        </StyledTableRow>
-                      // </Link>
-                    ))}
-                    
-                </TableBody>
+            <TableBody>
 
-                </Table>
+                {pastQuizData.map((row) => (
+                    /* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
+                    <StyledTableRow 
+                      key={row._id} 
+                      onClick={() => window.location.assign(`\\quizfinal\\${row._id}`)}
+                      sx={{
+                        cursor: 'pointer',
+                        '&:hover': {
+                          backgroundColor: 'rgba(0, 0, 0, 0.18)'
+                        }
+                      }}
+                    >
+                        
+                        <StyledTableCell component="th" scope="row" align="center">
+                        {row.title}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">{row.score}</StyledTableCell>
+                        <StyledTableCell align="center">{new Date(row.givenAt).toLocaleString('en-us',options)}</StyledTableCell>
+                        
+                    </StyledTableRow>
+                ))}
+                
+            </TableBody>
 
-            </TableContainer>
+            </Table>
+
+        </TableContainer>
   </div>;
 };
 

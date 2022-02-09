@@ -13,15 +13,20 @@ const Addtitle = ({ open , setOpen , data , setData }) => {
   const [errors, setErrors] = useState([]);
   
 
+  /** function to run when the user has entered the Title of the quiz and wants the link of the quiz */
   const sendToDB = () => {
     const title = document.getElementById('title-input').value; // Get the title
 
+    /** If title field is empty, display the error alert and prompt user to enter the title */
     if(title === '')
     {
       setErrors([ { id : 0 , msg : 'Title should not be empty.'} ]);
       return;
     }
 
+    /** If user has not entered the details of the questions(question,options,correct answer and time allotted)
+     *  or user might not have entered any question, then display the error alert and prompt the user to enter the question details
+     */
     if(data.questions.length === 0)
     {
       setErrors([ { id : 0 , msg : 'Seems like you have not added the questions. Kindly add them and then add the quiz'} ]);
@@ -42,8 +47,6 @@ const Addtitle = ({ open , setOpen , data , setData }) => {
       return currentQuestionData;
     }); // Adding the title to the object to be sent
 
-    // setData( previousQuestionData => ( {...previousQuestionData , userid : JSON.parse(localStorage.getItem('userData')).userid } ));
-    // console.log(data);
 
     /** this axios post request is sending the quiz data 
      * that is, its title, the data of questions (question , options , correct_answer , time_allotted)
