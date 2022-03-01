@@ -41,13 +41,14 @@ const QuizFinal = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [errors, setErrors] = useState([]);
 
+    /**
+     * This axios get request is calling the server to give
+     * the details of the specific quiz with the given id
+     * and then setting the quiz data with it
+    */
     useEffect( () => {
 
-        /**
-         * This axios get request is calling the server to give
-         * the details of the specific quiz with the given id
-         * and then setting the quiz data with it
-         */
+        
         axios.get(`http://localhost:5000/quiz/${quizid}` , {
             headers : {
                 'auth-token' : localStorage.getItem('userToken')
@@ -101,7 +102,6 @@ const QuizFinal = () => {
                 variant="outlined"
                 margin="normal"
                 id="quizid"
-                // label="Here is the Quiz Code to share"
                 name="quizid"
                 autoFocus
                 disabled
@@ -169,53 +169,46 @@ const QuizFinal = () => {
             >
 
                 <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell align="center" style={{ backgroundColor : '#f03861' , color : 'white'}}>Name</TableCell>
+                            <TableCell align="center" style={{ backgroundColor : '#f03861' , color : 'white'}}>Score</TableCell>
+                        </TableRow>
+                    </TableHead>
 
-                <TableHead>
-
-                    <TableRow>
-
-                        <TableCell align="center" style={{ backgroundColor : '#f03861' , color : 'white'}}>Name</TableCell>
-                        <TableCell align="center" style={{ backgroundColor : '#f03861' , color : 'white'}}>Score</TableCell>
-
-                    </TableRow>
-
-                </TableHead>
-
-
-                <TableBody>
-                    
-                    
-                    {leaderboard.map((row) => {
-                        const currUserCellStyle = {
-                            backgroundColor: row._id === JSON.parse(localStorage.getItem('userData')).userid ? '#42b883 !important' : 'inherit',
-                            color: row._id === JSON.parse(localStorage.getItem('userData')).userid ? 'white !important' : 'inherit',
-                        };
-                    
-                    return (
-                        /* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
-                        <StyledTableRow 
-                            key={row._id}
-                            onClick={() => window.location.assign(`\\profile\\${row._id}`)}
-                            sx={{
-                                cursor: 'pointer',
-                                '&:hover': {
-                                backgroundColor: 'rgba(0, 0, 0, 0.18)'
-                                },
-                            }}
-                        >
-                            <StyledTableCell component="th" scope="row" align="center" sx={currUserCellStyle} >
-                                {row.name}
-                            </StyledTableCell>
-                            <StyledTableCell align="center" sx={currUserCellStyle} >
-                                {row.score}
-                            </StyledTableCell>
-                            
-                        </StyledTableRow>
-                    );
-                            })}
-                    
-                </TableBody>
-
+                    <TableBody>
+                        
+                        
+                        {leaderboard.map((row) => {
+                            const currUserCellStyle = {
+                                backgroundColor: row._id === JSON.parse(localStorage.getItem('userData')).userid ? '#42b883 !important' : 'inherit',
+                                color: row._id === JSON.parse(localStorage.getItem('userData')).userid ? 'white !important' : 'inherit',
+                            };
+                        
+                        return (
+                            /* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
+                            <StyledTableRow 
+                                key={row._id}
+                                onClick={() => window.location.assign(`\\profile\\${row._id}`)}
+                                sx={{
+                                    cursor: 'pointer',
+                                    '&:hover': {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.18)'
+                                    },
+                                }}
+                            >
+                                <StyledTableCell component="th" scope="row" align="center" sx={currUserCellStyle} >
+                                    {row.name}
+                                </StyledTableCell>
+                                <StyledTableCell align="center" sx={currUserCellStyle} >
+                                    {row.score}
+                                </StyledTableCell>
+                                
+                            </StyledTableRow>
+                        );
+                                })}
+                        
+                    </TableBody>
                 </Table>
 
             </TableContainer>

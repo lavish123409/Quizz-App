@@ -36,10 +36,6 @@ const userSchema = new mongoose.Schema({
   ],
   quiz_made: [
     {
-      // quizid: {
-      //   type: String,
-      //   required: true,
-      // },
       title: {
         type: String,
         required: true,

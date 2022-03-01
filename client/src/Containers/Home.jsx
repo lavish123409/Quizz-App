@@ -55,7 +55,7 @@ const Home = () => {
     }
 
     let userhasgiven = {
-      result : false
+      data : {result : false}
     };
 
     /**
@@ -119,43 +119,26 @@ const Home = () => {
 
 
       {/** ------------------------------------Navigation Bar-------------------------------------------------- */}
-      <AppBar
-        style={{
-          backgroundColor : '#118a7e',
-          zIndex : '2'
-        }}
-      >
+      <AppBar className={classes.appbar} >
         <Toolbar>
 
           <Typography
             variant="h5"
             href="/"
-            sx={{
-              flexGrow : 1
-            }}
-            style={{
-              marginLeft : '5%',
-              cursor : 'pointer',
-              fontWeight : '700'
-            }}
+            className={classes.appbarTitle}
           >
             Quizz App
           </Typography>
 
           {user ? (
             /** If user is present, then show the Avatar and Log Out Button */
-            <Box
-              style={{
-                marginLeft : 'auto',
-                display : 'flex'
-              }}
-            >
+            <Box className={classes.loggingBox} >
               <Avatar 
-              style={{
-                marginRight : '35px',
-                backgroundColor : getRandomColor(),
-                cursor: 'pointer'
-              }}
+                style={{
+                  marginRight : '35px',
+                  backgroundColor : getRandomColor(),
+                  cursor: 'pointer'
+                }}
               onClick={() => window.location.assign(`/profile/${user.userid}`)}
               >
                 {user.name.charAt(0).toUpperCase()}
@@ -167,11 +150,7 @@ const Home = () => {
             </Box>
           ) : (
             /** Otherwise show the Sign Up and Sign In Buttons */
-            <Box
-              style={{
-                marginLeft : 'auto'
-              }}
-            >
+            <Box className={classes.loggingBox} >
               <Button className={classes.appbarButtons} href="/signup">
                 Sign Up
               </Button>
@@ -207,18 +186,7 @@ const Home = () => {
         </Grid>
 
         {/* ----------------Past quizzes section ----------------------------------------------------------------- */}
-        <Grid 
-          item
-          className={classes.section}
-          style={{
-            width: '90%',
-            textAlign: 'center',
-            paddingTop: '2%',
-            marginBottom: '2%',
-            borderRadius: '5px',
-            boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px',
-          }}
-        >
+        <Grid item className={`${classes.section} ${classes.pastquizsection}`} >
           <Typography variant="h4">Past Quizzes</Typography>
           {
             user ?
@@ -226,11 +194,7 @@ const Home = () => {
             :
             <Typography 
               variant="h6"
-              style={{
-                fontFamily: 'Times New Roman',
-                margin: '10px',
-                color: '#9ba6a5'
-              }}
+              className={classes.loginErrorText}
             >
               You need to login to see the past quizzes.
             </Typography>

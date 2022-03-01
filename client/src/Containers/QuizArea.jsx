@@ -40,7 +40,9 @@ const Home = () => {
   const colorButton = (optionID , bgcolor , color) => {
 
         if(optionID === '') // if option id is empty string then selected option would be undefined
-        return; // So, we are exiting from function before any error
+        {
+            return; // So, we are exiting from function before any error
+        }
 
 
         const slctdOption = document.getElementById(optionID); // Get the button with given option id
@@ -177,7 +179,9 @@ const Home = () => {
     }
 
     if(interval) // [ NOT WORKING ] if timer is running then stop it
-    clearInterval(interval);
+    {
+        clearInterval(interval);
+    }
       
     /**  -------------------------------Timer------------------------------------------------  */
     interval = setInterval(() => {
@@ -189,11 +193,15 @@ const Home = () => {
         {
             clearInterval(interval); // stop the timer
             if(!showAnswerRef.current) // if show answer state is not activated
-            checkAnswer(); // then check the answer and activate the show answer state
+            {
+                checkAnswer(); // then check the answer and activate the show answer state
+            }
         }
 
         if(showAnswerRef.current) // if show answer state has been activated
-        clearInterval(interval); // stop the timer
+        {
+            clearInterval(interval); // stop the timer
+        }
 
     }, 1000);
     
@@ -207,12 +215,14 @@ const Home = () => {
     
     // loop to get the correct answer
     if(!isLoading)
-    for(let i = 0; i < quizData.questions[index].options.length ; i +=1 )
     {
-        if(quizData.questions[index].correct_answer === quizData.questions[index].options[i])
+        for(let i = 0; i < quizData.questions[index].options.length ; i +=1 )
         {
-            correctOptionRef.current = `option_${i+1}`;
-            break;
+            if(quizData.questions[index].correct_answer === quizData.questions[index].options[i])
+            {
+                correctOptionRef.current = `option_${i+1}`;
+                break;
+            }
         }
     }
 
@@ -229,10 +239,14 @@ const Home = () => {
     setShowAnswer(showAnswerRef.current);
 
     if(index + 1 < quizData.questions.length) // If the index of the next question is available or is less than the length of questions array
-    setIndex( ind => ind + 1); // then set the index to next index
+    {
+        setIndex( ind => ind + 1); // then set the index to next index
+    }
 
     else // otherwise
-    window.location.replace(`\\quizfinal\\${quizid}`); // take the user to the Quiz Final page
+    {
+        window.location.replace(`\\quizfinal\\${quizid}`); // take the user to the Quiz Final page
+    }
 
   }
 

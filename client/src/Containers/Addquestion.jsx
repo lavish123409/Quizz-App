@@ -23,20 +23,23 @@ const Addquestion = () => {
     correctanswer: false,
     timegiven: false
   }); // fieldErrors object to set the error on every text field
+  const [questionData, setQuestionData] = useState({
+    question : '',
+    options : [],
+    correct_answer : '',
+    time_given : ''
+  }); // questionData object to hold data related to every question
+  const [option1, setOption1] = useState('');
+  const [option2, setOption2] = useState('');
+  const [option3, setOption3] = useState('');
+  const [option4, setOption4] = useState('');
   const [errors, setErrors] = useState([]);
 
 
   const sendData = () => {
-    const question = document.getElementById('question-input').value;
-    const option1 = document.getElementById('option1-input').value;
-    const option2 = document.getElementById('option2-input').value;
-    const option3 = document.getElementById('option3-input').value;
-    const option4 = document.getElementById('option4-input').value;
-    const correctAnswer = document.getElementById('correct-answer').value;
-    const timeGiven = document.getElementById('time-given').value;
 
     /** If question field is empty, display the error on question text field */
-    if(question === '')
+    if(questionData.question === '')
     {
       setFieldErrors(prevValue => ({...prevValue , question : true}));
       return;
@@ -71,51 +74,58 @@ const Addquestion = () => {
     }
 
     /** If correct answer field is empty, display the error on correct answer text field */
-    if(correctAnswer === '')
+    if(questionData.correct_answer === '')
     {
       setFieldErrors(prevValue => ({...prevValue , correctanswer : true}));
       return;
     }
 
     /** If correct answer is not one of the given option, then show the error */
-    if(!(correctAnswer === option1 || correctAnswer === option2 || correctAnswer === option3 || correctAnswer === option4))
+    if(!(questionData.correct_answer === option1 || questionData.correct_answer === option2 || questionData.correct_answer === option3 || questionData.correct_answer === option4))
     {
       setErrors([ { id : 0 , msg : 'Correct answer should be one of the options.'} ]);
       return;
     }
 
     /** If time given field is empty, display the error on time given text field */
-    if(timeGiven === '')
+    if(questionData.time_given === '')
     {
       setFieldErrors(prevValue => ({...prevValue , timegiven : true}));
       return;
     }
   
-    const questionData = {
-      question,
-      options : [],
-      correct_answer : correctAnswer,
-      time_given : timeGiven
-    };
 
     questionData.options.push(option1);
     questionData.options.push(option2);
     questionData.options.push(option3);
     questionData.options.push(option4);
 
+
     setData( previousQuestionData => {
       previousQuestionData.questions.push(questionData);
       return data;
     });
+
   
   
-    document.getElementById('question-input').value = '';
-    document.getElementById('option1-input').value = '';
-    document.getElementById('option2-input').value = '';
-    document.getElementById('option3-input').value = '';
-    document.getElementById('option4-input').value = '';
-    document.getElementById('correct-answer').value = '';
-    document.getElementById('time-given').value = '';
+    // document.getElementById('question-input').value = '';
+    setQuestionData(prevValue => ({
+      ...prevValue,
+      question : '',
+      options : [],
+      correct_answer : '',
+      time_given : ''
+    }));
+    setOption1('');
+    setOption2('');
+    setOption3('');
+    setOption4('');
+    // document.getElementById('option1-input').value = '';
+    // document.getElementById('option2-input').value = '';
+    // document.getElementById('option3-input').value = '';
+    // document.getElementById('option4-input').value = '';
+    // document.getElementById('correct-answer').value = '';
+    // document.getElementById('time-given').value = '';
   
   };
 
@@ -153,6 +163,8 @@ const Addquestion = () => {
             variant="outlined"
             multiline
             maxRows={5}
+            value={questionData.question}
+            onChange={(e) => setQuestionData(prevValue => ({...prevValue , question : e.target.value}))}
             error={fieldErrors.question}
             helperText={fieldErrors.question ? 'Question cannot be empty.' : ''}
             onClick={() => setFieldErrors(prevValue => ({...prevValue , question : false}))}
@@ -167,6 +179,8 @@ const Addquestion = () => {
               id="option1-input"
               label="Option 1"
               variant="outlined"
+              value={option1}
+              onChange={(e) => setOption1(e.target.value)}
               error={fieldErrors.option1}
               helperText={fieldErrors.option1 ? 'Option field cannot be empty.' : ''}
               onClick={() => setFieldErrors(prevValue => ({...prevValue , option1 : false}))}
@@ -180,6 +194,8 @@ const Addquestion = () => {
               id="option2-input"
               label="Option 2"
               variant="outlined"
+              value={option2}
+              onChange={(e) => setOption2(e.target.value)}
               error={fieldErrors.option2}
               helperText={fieldErrors.option2 ? 'Option field cannot be empty.' : ''}
               onClick={() => setFieldErrors(prevValue => ({...prevValue , option2 : false}))}
@@ -193,6 +209,8 @@ const Addquestion = () => {
               id="option3-input"
               label="Option 3"
               variant="outlined"
+              value={option3}
+              onChange={(e) => setOption3(e.target.value)}
               error={fieldErrors.option3}
               helperText={fieldErrors.option3 ? 'Option field cannot be empty.' : ''}
               onClick={() => setFieldErrors(prevValue => ({...prevValue , option3 : false}))}
@@ -206,6 +224,8 @@ const Addquestion = () => {
               id="option4-input"
               label="Option 4"
               variant="outlined"
+              value={option4}
+              onChange={(e) => setOption4(e.target.value)}
               error={fieldErrors.option4}
               helperText={fieldErrors.option4 ? 'Option field cannot be empty.' : ''}
               onClick={() => setFieldErrors(prevValue => ({...prevValue , option4 : false}))}
@@ -223,6 +243,8 @@ const Addquestion = () => {
                 width: '100%',
                 margin: '25px'
               }}
+              value={questionData.correct_answer}
+              onChange={(e) => setQuestionData(prevValue => ({...prevValue , correct_answer : e.target.value}))}
               error={fieldErrors.correctanswer}
               helperText={fieldErrors.correctanswer ? 'Question cannot be empty.' : ''}
               onClick={() => setFieldErrors(prevValue => ({...prevValue , correctanswer : false}))}
@@ -241,6 +263,8 @@ const Addquestion = () => {
                 width: '50%',
                 margin: '25px'
               }}
+              value={questionData.time_given}
+              onChange={(e) => setQuestionData(prevValue => ({...prevValue , time_given : e.target.value}))}
               error={fieldErrors.timegiven}
               helperText={fieldErrors.timegiven ? 'Question cannot be empty.' : ''}
               onClick={() => setFieldErrors(prevValue => ({...prevValue , timegiven : false}))}

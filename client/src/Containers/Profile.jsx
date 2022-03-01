@@ -11,36 +11,36 @@ import useStyles from './Styles/ProfileStyles';
 import ErrorAlert from './ErrorAlert';
 
 
-    /** These functions are styling the rows of React table
-     *  [MAYBE NOT WORKING]
-     */
-    const StyledTableCell = styled(TableCell)(({ theme }) => ({
-        [`&.${tableCellClasses.head}`]: {
-        backgroundColor: theme.palette.common.blue,
-        color: theme.palette.common.white,
-        },
-        [`&.${tableCellClasses.body}`]: {
-        fontSize: 14,
-        },
-    }));
-
-
-    const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    '&:nth-of-type(odd)': {
-        backgroundColor: theme.palette.action.hover,
+/** These functions are styling the rows of React table
+ *  [MAYBE NOT WORKING]
+ */
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.blue,
+    color: theme.palette.common.white,
     },
-    // hide last border
-    '&:last-child td, &:last-child th': {
-        border: 0,
+    [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
     },
-    }));
+}));
 
 
-    // This function is used to Log Out the user by clearing the local storage and sending to home page
-    const logoutUser = () => {
-        localStorage.clear();
-        window.location.replace('/');
-    };
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+'&:nth-of-type(odd)': {
+    backgroundColor: theme.palette.action.hover,
+},
+// hide last border
+'&:last-child td, &:last-child th': {
+    border: 0,
+},
+}));
+
+
+// This function is used to Log Out the user by clearing the local storage and sending to home page
+const logoutUser = () => {
+    localStorage.clear();
+    window.location.replace('/');
+};
 
 
 
@@ -62,6 +62,11 @@ const Profile = () => {
 
     const classes = useStyles();
 
+    /**
+     * this use effect would run whenever user would load the profile page
+     * and set the current user state and 
+     * also get the profile user data from DB
+     */
     useEffect(() => {
 
         /** setting the current user data from localstorage */

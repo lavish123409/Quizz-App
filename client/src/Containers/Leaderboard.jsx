@@ -80,7 +80,6 @@ const Leaderboard = ({open , setOpen , quizid}) => {
           fullScreen
           open={open}
           onClose={() => setOpen(false)}
-          // TransitionComponent={Transition}
       >
 
       { errors.length === 0 ? '' : (<ErrorAlert errors={errors} setErrors={setErrors}/>) }
@@ -99,7 +98,6 @@ const Leaderboard = ({open , setOpen , quizid}) => {
             </IconButton>
 
             <Typography 
-                // sx={{ m: '10 auto', flex: 1 }} 
                 variant="h6" 
                 component="div"
                 style={{
@@ -132,46 +130,37 @@ const Leaderboard = ({open , setOpen , quizid}) => {
                   width : '80%'
               }}
           >
-  
-              <Table sx={{ minWidth: 700 }} aria-label="customized table">
-      
-                <TableHead>
-        
-                  <TableRow>
-      
-                    <TableCell align="center" style={{ backgroundColor : 'black' , color : 'white'}}>Name</TableCell>
-                    <TableCell align="center" style={{ backgroundColor : 'black' , color : 'white'}}>Score</TableCell>
-      
-                  </TableRow>
-        
-                </TableHead>
-      
-      
-                <TableBody>
-
-                    {leaderboard.map((row) => {
-                      const currUserCellStyle = {
-                        backgroundColor: row._id === JSON.parse(localStorage.getItem('userData')).userid ? '#42b883 !important' : 'inherit',
-                        color: row._id === JSON.parse(localStorage.getItem('userData')).userid ? 'white !important' : 'inherit',
-                      };
-                    
-                      return (
-                      /* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
-                        <StyledTableRow key={row._id}>
-                            
-                          <StyledTableCell component="th" scope="row" align="center" style={currUserCellStyle}>
-                          {row.name}
-                          </StyledTableCell>
-                          <StyledTableCell align="center" style={currUserCellStyle}>{row.score}</StyledTableCell>
-                            
-                        </StyledTableRow>
-                      );
-                    })}
-                    
-                </TableBody>
-      
-              </Table>
-  
+            <Table sx={{ minWidth: 700 }} aria-label="customized table">
+              
+              <TableHead>
+                <TableRow>
+                  <TableCell align="center" style={{ backgroundColor : 'black' , color : 'white'}}>Name</TableCell>
+                  <TableCell align="center" style={{ backgroundColor : 'black' , color : 'white'}}>Score</TableCell>
+                </TableRow>
+              </TableHead>
+    
+              <TableBody>
+                  {leaderboard.map((row) => {
+                    const currUserCellStyle = {
+                      backgroundColor: row._id === JSON.parse(localStorage.getItem('userData')).userid ? '#42b883 !important' : 'inherit',
+                      color: row._id === JSON.parse(localStorage.getItem('userData')).userid ? 'white !important' : 'inherit',
+                    };
+                  
+                    return (
+                    /* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
+                      <StyledTableRow key={row._id}>
+                          
+                        <StyledTableCell component="th" scope="row" align="center" style={currUserCellStyle}>
+                        {row.name}
+                        </StyledTableCell>
+                        <StyledTableCell align="center" style={currUserCellStyle}>{row.score}</StyledTableCell>
+                          
+                      </StyledTableRow>
+                    );
+                  })}
+              </TableBody>
+    
+            </Table>
           </TableContainer>
           
           </>

@@ -28,15 +28,7 @@ const quizSchema = new mongoose.Schema({
     },
   ],
   leaderboard: [
-    // {
-    //   type: Object,
-    //   required: true,
-    // },
     {
-      // userid: {
-      //   type: String,
-      //   required: true,
-      // },
       name: {
         type: String,
         required: true,

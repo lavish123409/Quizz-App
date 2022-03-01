@@ -1,6 +1,19 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 export default makeStyles({
+  appbar: {
+    backgroundColor: '#118a7e',
+    zIndex: '2'
+  },
+  appbarTitle: {
+    marginLeft: '5%',
+    cursor: 'pointer',
+    fontWeight: '700'
+  },
+  loggingBox: {
+    marginLeft: 'auto',
+    display: 'flex'
+  },
   section: {
     marginTop: '7.5%'
   },
@@ -33,5 +46,18 @@ export default makeStyles({
     '&:hover': {
       color: '#fff'
     }
+  },
+  pastquizsection: {
+    width: '90%',
+    textAlign: 'center',
+    paddingTop: '2%',
+    marginBottom: '2%',
+    borderRadius: '5px',
+    boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px'
+  },
+  loginErrorText: {
+    fontFamily: 'Times New Roman',
+    margin: '10px',
+    color: '#9ba6a5'
   }
 });
