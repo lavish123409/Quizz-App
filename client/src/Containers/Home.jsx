@@ -36,8 +36,8 @@ const Home = () => {
   const [errors, setErrors] = useState([]);
   const serverURL = process.env.REACT_APP_SERVER_URL;
 
-  console.log(process.env);
-  console.log(serverURL);
+  // console.log(process.env);
+  // console.log(serverURL);
 
   /** this use effect runs whenever Home page loads
    *  and initializes the user state from  localstorage object
