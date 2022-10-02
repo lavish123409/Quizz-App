@@ -34,7 +34,7 @@ mongoose
     useUnifiedTopology: true,
   })
   .catch((err) => {
-    // console.error('error : ' , err);
+    console.error("error : ", err);
     process.exit(1);
   })
   .then(async (conn) => {
