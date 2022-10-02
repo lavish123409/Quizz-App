@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+// const path = require("path");
 
 const dotenv = require("dotenv");
 
@@ -23,7 +24,18 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// To check if the server is working or not
+// To run server on production (from build folder)
+// if (process.env.NODE_ENV === "production") {
+// app.use(express.static(path.join(__dirname, "..", "client", "build")));
+
+// app.get("/", function (req, res) {
+//   res.sendFile(path.join(__dirname, "..", "client", "build", "index.html"));
+// });
+// // }
+// else {
+// }
+
+// To check if the server is working or not on dev
 app.get("/", (req, res) => res.send("hello world!!!"));
 
 const port = process.env.PORT || 8000;
