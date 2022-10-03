@@ -252,12 +252,9 @@ const Addquestion = () => {
               type="number"
               required
               id="time-given"
+              className={classes.timeinput}
               label="Time allotted for the question (in seconds)"
               variant="outlined"
-              style={{
-                width: '50%',
-                margin: '25px'
-              }}
               value={questionData.time_given}
               onChange={(e) =>
                 setQuestionData((prevValue) => ({ ...prevValue, time_given: e.target.value }))

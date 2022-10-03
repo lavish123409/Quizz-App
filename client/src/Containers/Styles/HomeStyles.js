@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-export default makeStyles({
+export default makeStyles((theme) => ({
   appbar: {
     backgroundColor: '#118a7e',
     zIndex: '2'
@@ -20,13 +20,23 @@ export default makeStyles({
   makequizbutton: {
     padding: '10px 20px',
     fontSize: '30px',
-    textTransform: 'none'
+    textTransform: 'none',
+    [theme.breakpoints.down('md')]: {
+      marginTop: '23%',
+      fontSize: '20px',
+      padding: '10px 17px'
+    }
   },
   quizcodesection: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-evenly',
-    width: '40%'
+    [theme.breakpoints.up('md')]: {
+      width: '40%'
+    },
+    [theme.breakpoints.down('md')]: {
+      width: '100%'
+    }
   },
   quizcodesectionbutton: {
     padding: '15px',
@@ -60,4 +70,4 @@ export default makeStyles({
     margin: '10px',
     color: '#9ba6a5'
   }
-});
+}));
