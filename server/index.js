@@ -307,3 +307,13 @@ app.get("/checkif/:userid/hasgiven/:quizid", async (req, res) => {
    */
   res.send({ result: response[0].matchedIndex !== -1 });
 });
+
+
+app.use("/.netlify/functions/quizApp", async (event, context) => {
+    // This handler will be invoked by Netlify Functions
+    const response = await app(event, context);
+    return response;
+  }
+);
+
+module.exports = app;

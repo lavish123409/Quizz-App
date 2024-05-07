@@ -1,0 +1,8 @@
+[build]
+    functions = "functions"
+#     base = "server/"
+
+# [dev]
+#   command = "node index.js"
+#   port = 8888
+#   targetPort = 5000
