@@ -18,7 +18,9 @@ FOSS Overflow is a month-long festival celebrating open source culture and is or
 
 You can check the live hosted Quizz App [here](https://quizz-app-foss-overflow.netlify.app/)
 
-Code for the Test quiz - 6339abda469eb394473690b7
+Code for the Test quiz - 663b34611e083b1888e8e36c
+
+`Note: Currently, the database is facing some issues`
 
 ## Setup
 
