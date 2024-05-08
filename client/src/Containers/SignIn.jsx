@@ -39,15 +39,22 @@ const SignIn = () => {
         window.location.replace('/');
       })
       .catch((err) => {
-        setErrors(
-          err.response.data.errors.map((msg, ind) => {
-            const errorObject = {
-              id: ind,
-              msg
-            };
-            return errorObject;
-          })
-        );
+        if(err.response)
+        {
+          setErrors(
+            err.response.data.errors.map((msg, ind) => {
+              const errorObject = {
+                id: ind,
+                msg
+              };
+              return errorObject;
+            })
+          );
+        }
+        else if(err.request)
+        {
+          setErrors([{ id: 0, msg: err.message }]);
+        }
       });
   }
 
